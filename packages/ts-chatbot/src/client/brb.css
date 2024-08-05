@@ -1,0 +1,61 @@
+@font-face {
+  font-family: "Amatic";
+  src: url("./fonts/amaticsc/AmaticSC-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Marker";
+  src: url("./fonts/permanentmarker/PermanentMarker-Regular.ttf")
+    format("truetype");
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: white;
+  background-color: none;
+}
+
+#timer {
+  background-color: rgba(0, 0, 0, 0.67);
+  width: 110vh;
+  border-radius: 10vh;
+  padding: 5vh;
+  display: none;
+}
+
+#time-outline {
+  text-align: center;
+  font-size: 60vh;
+  font-family: "Amatic";
+  text-shadow: 1vw 1vw 2vw black;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+}
+
+#minutes-tens,
+#minutes-ones,
+#seconds-tens,
+#seconds-ones {
+  display: inline-block;
+  width: 22vh;
+}
+
+#reason-outline {
+  text-align: center;
+  height: 25vh;
+  padding: 0;
+  padding-top: 5vh;
+  margin: 0;
+}
+
+#reason {
+  font-size: 10vh;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+  font-family: "Marker";
+  margin: 0;
+  padding: 0;
+}

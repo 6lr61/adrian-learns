@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Voting OBS Browser Source</title>
+    <link href="vote.css" rel="stylesheet" />
+    <script>
+      window.addEventListener("load", (event) => {
+        console.log("The page is fully loaded: Trying to connect to websocket");
+        connect();
+      });
+
+      function connect() {
+        const element = document.getElementById("timer"); // this thing!
+
+        const ws = new WebSocket("ws://localhost:8086");
+        // Connection opened
+        ws.addEventListener("open", (event) => {
+          console.log("Websocket: Connected to Server");
+          ws.send("Hello from BRB Overlay!");
+        });
+
+        // Listen for messages
+        ws.addEventListener("message", (event) => {
+          const votingMessage = JSON.parse(event.data);
+          console.log(votingMessage);
+
+          // Only update the supplied properties
+          showVotingDisplay(votingMessage.visible, votingMessage.kind);
+
+          if (votingMessage.reason) {
+            updateText(votingMessage.reason);
+          }
+
+          if (votingMessage.votes) {
+            updateVotingBars(votingMessage.votes);
+          }
+        });
+
+        ws.addEventListener("close", (event) => {
+          console.error("Websocket: Connection was closed");
+          setTimeout(connect, 5_000);
+        });
+      }
+
+      /* {
+  reason?: string;
+  kind?: "yesno" | "tier";
+  visible: boolean;
+  votes?: Record<string, number>;
+}
+ */
+      function showVotingDisplay(visible, kind) {
+        document.getElementById("voting-display").style.display = visible
+          ? "block"
+          : "none";
+        document.getElementById("yesno-vote").style.display =
+          visible && kind === "yesno" ? "block" : "none";
+        document.getElementById("tier-vote").style.display =
+          visible && kind === "tier" ? "block" : "none";
+      }
+
+      function updateVotingBars(votes) {
+        for (const [vote, percentage] of Object.entries(votes)) {
+          const votingBar = document.getElementById(`vote-${vote}`);
+          votingBar.style.width = `${percentage}%`;
+          votingBar.firstChild.innerText = `${vote}: ${percentage}%`;
+        }
+      }
+
+      function updateText(reason) {
+        const reasonText = document.getElementById("reason");
+        reasonText.innerText = reason;
+      }
+    </script>
+  </head>
+  <body>
+    <article id="voting-display">
+      <section id="reason-outline">
+        <p id="reason"></p>
+      </section>
+      <section id="yesno-vote">
+        <div class="bar-outline">
+          <div id="vote-1" class="vote-bar"><p id="vote-1-text"></p></div>
+          <div id="vote-2" class="vote-bar"><p id="vote-2-text"></p></div>
+        </div>
+      </section>
+      <section id="tier-vote">
+        <div class="bar-outline">
+          <div id="vote-S" class="vote-bar"><p id="vote-S-text"></p></div>
+        </div>
+        <div class="bar-outline">
+          <div id="vote-A" class="vote-bar"><p id="vote-A-text"></p></div>
+        </div>
+        <div class="bar-outline">
+          <div id="vote-B" class="vote-bar"><p id="vote-B-text"></p></div>
+        </div>
+        <div class="bar-outline">
+          <div id="vote-C" class="vote-bar"><p id="vote-C-text"></p></div>
+        </div>
+        <div class="bar-outline">
+          <div id="vote-D" class="vote-bar"><p id="vote-D-text"></p></div>
+        </div>
+        <div class="bar-outline">
+          <div id="vote-E" class="vote-bar"><p id="vote-E-text"></p></div>
+        </div>
+        <div class="bar-outline">
+          <div id="vote-F" class="vote-bar"><p id="vote-F-text"></p></div>
+        </div>
+      </section>
+    </article>
+  </body>
+</html>

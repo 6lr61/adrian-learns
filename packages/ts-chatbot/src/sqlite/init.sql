@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS user (
+  user_id INTEGER PRIMARY KEY NOT NULL,
+  login_name TEXT NOT NULL,
+  display_name TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS gift_attr (
+  gift_attr_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  attr_desc TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS gift_item (
+  gift_item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  item_desc TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS user_gift (
+  gift_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  attr_id INTEGER NOT NULL REFERENCES gift_attr (gift_attr_id),
+  item_id INTEGER NOT NULL REFERENCES gift_item (gift_item_id),
+  user_id INTEGER NOT NULL REFERENCES user (user_id)
+);

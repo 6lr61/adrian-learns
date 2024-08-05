@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BRB Timer OBS Browser Source</title>
+    <link href="brb.css" rel="stylesheet" />
+    <script>
+      window.addEventListener("load", (event) => {
+        console.log("The page is fully loaded");
+        connect();
+      });
+
+      function connect() {
+        const element = document.getElementById("timer"); // this thing!
+
+        const ws = new WebSocket("ws://localhost:8080");
+        // Connection opened
+        ws.addEventListener("open", (event) => {
+          console.log("Websocket: Connected to Server");
+          ws.send("Hello from BRB Overlay!");
+        });
+
+        // Listen for messages
+        ws.addEventListener("message", (event) => {
+          const timerObject = JSON.parse(event.data);
+          console.log(timerObject);
+
+          showTimer(timerObject.showTimer);
+
+          if (timerObject.remainingTime >= 0) {
+            displayTime(timerObject.remainingTime);
+          }
+
+          if (timerObject.reasonText) {
+            displayReason(timerObject.reasonText);
+          }
+        });
+
+        ws.addEventListener("close", (event) => {
+          console.error("Websocket: Connection was closed");
+          setTimeout(connect, 5_000);
+        });
+      }
+
+      function displayTime(time) {
+        const timerMinutesTens = document.getElementById("minutes-tens");
+        const timerMinutesOnes = document.getElementById("minutes-ones");
+        const timerSecondsTens = document.getElementById("seconds-tens");
+        const timerSecondsOnes = document.getElementById("seconds-ones");
+
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60);
+
+        timerMinutesTens.innerText = Math.floor(minutes / 10).toString();
+        timerMinutesOnes.innerText = Math.floor(minutes % 10).toString();
+        timerSecondsTens.innerText = Math.floor(seconds / 10).toString();
+        timerSecondsOnes.innerText = Math.floor(seconds % 10).toString();
+      }
+
+      function displayReason(reason) {
+        const timerReason = document.getElementById("reason");
+        timerReason.innerText = reason;
+      }
+
+      function showTimer(display) {
+        const timer = document.getElementById("timer");
+
+        if (display) {
+          timer.style.display = "block";
+        } else {
+          timer.style.display = "none";
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <article id="timer">
+      <section id="time-outline">
+        <span id="minutes-tens">0</span><span id="minutes-ones">0</span>:<span
+          id="seconds-tens"
+          >0</span
+        ><span id="seconds-ones">0</span>
+      </section>
+      <section id="reason-outline">
+        <p id="reason"></p>
+      </section>
+    </article>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "name": "ts-chatbot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "private": "true",
+  "scripts": {
+    "compile": "tsc",
+    "prestart": "tsc",
+    "start": "node --env-file=config.env dist/bot.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.2",
+    "@types/ws": "^8.5.5",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
+    "eslint": "^8.52.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@types/better-sqlite3": "^7.6.7",
+    "better-sqlite3": "^9.1.1",
+    "ts-twitch-irc": "^0.2.0",
+    "ws": "^8.14.1"
+  }
+}
