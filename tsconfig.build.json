@@ -1,0 +1,14 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "packages/ts-twitch-irc"
+    },
+    {
+      "path": "packages/ts-twitch-helix"
+    },
+    {
+      "path": "packages/ts-chatbot"
+    }
+  ]
+}
