@@ -1,0 +1,22 @@
+{
+  "name": "ts-twitch-helix",
+  "private": "true",
+  "version": "0.0.1",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "vitest"
+  },
+  "keywords": [],
+  "author": "Adrian Learns",
+  "license": "LGPL-3.0",
+  "devDependencies": {
+    "@types/node": "^20.9.0",
+    "vitest": "^2.0.2"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "description": ""
+}
