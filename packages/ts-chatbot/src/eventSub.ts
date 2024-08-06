@@ -1,7 +1,7 @@
 import { WebSocket } from "ws";
 import { sendChatAnnouncement } from "./helix.js";
 import { getToken } from "./auth.js";
-import type { Dispatch } from "./bot.js";
+import type { Dispatch } from "./services/dispatch.js";
 
 const TWITCH_EVENTSUB = "wss://eventsub.wss.twitch.tv/ws";
 const TWITCH_SUBSCRIBE_API =

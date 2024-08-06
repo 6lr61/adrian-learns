@@ -12,7 +12,7 @@ import { hasPermission } from "../runBotCommand.js";
 import { type PrivateMessage } from "ts-twitch-irc";
 import { alias } from "./alias.js";
 import { randomInt } from "node:crypto";
-import type { Dispatch } from "../bot.js";
+import type { Dispatch } from "../services/dispatch.js";
 
 export type Commands = Record<string, CommandDeclaration>;
 

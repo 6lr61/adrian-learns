@@ -1,7 +1,7 @@
 import { borrowToken, getToken } from "./auth.js";
 import { type PrivateMessage } from "ts-twitch-irc";
 import { findNames, getAttributes } from "./commands/commands.js";
-import type { Dispatch } from "./bot.js";
+import type { Dispatch } from "./services/dispatch.js";
 
 const TWITCH_HELIX_API = "https://api.twitch.tv/helix";
 

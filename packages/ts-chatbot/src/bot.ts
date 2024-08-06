@@ -3,6 +3,7 @@ import { wsEventsubConnect } from "./eventSub.js";
 import { Chat, type PrivateMessage } from "ts-twitch-irc";
 import { runBotCommand } from "./runBotCommand.js";
 import { sendWhisper } from "./helix.js";
+import { Dispatch } from "./services/dispatch.js";
 
 // Start new log file
 // startNewLog();
@@ -17,39 +18,12 @@ await getToken();
 // We probably have to create the websocket again, if we close it?
 
 // TODO: Come up with a better name for this
-export class Dispatch {
-  constructor(private chat: Chat) {}
-
-  say(message: string): void {
-    chat.send(message);
-  }
-
-  reply(messageId: string, message: string): void {
-    chat.sendReply(messageId, message);
-  }
-
-  whisper(userId: string, message: string): void {
-    sendWhisper(userId, message);
-  }
-
-  error(message: string, options?: { userId?: string; messageId?: string }) {
-    if (options) {
-      if (options.userId) {
-        sendWhisper(options.userId, message);
-      } else if (options.messageId) {
-        chat.sendReply(options.messageId, message);
-      }
-    } else {
-      chat.send(message);
-    }
-  }
-}
 
 const twitchToken = await getToken();
 const chat = new Chat(twitchToken, borrowToken, process.env.BROADCASTER_LOGIN);
 chat.on("privateMessage", parseMessage);
 
-const dispatcher = new Dispatch(chat);
+const dispatcher = new Dispatch(chat, sendWhisper);
 
 // Connect to Eventsub
 wsEventsubConnect(dispatcher);

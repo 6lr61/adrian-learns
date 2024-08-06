@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { randomInt } from "crypto";
-import type { Dispatch } from "../bot.js";
+import type { Dispatch } from "../services/dispatch.js";
 import type { PrivateMessage } from "ts-twitch-irc";
 import { getName } from "./commands.js";
 

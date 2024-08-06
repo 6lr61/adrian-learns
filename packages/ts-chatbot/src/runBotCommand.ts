@@ -2,7 +2,7 @@ import { coolingDownUntil, formatTimeUntil, setCooldown } from "./cooldown.js";
 import { commands, type CommandDeclaration } from "./commands/commands.js";
 import { type PrivateMessage } from "ts-twitch-irc";
 import { getAlias } from "./commands/alias.js";
-import type { Dispatch } from "./bot.js";
+import type { Dispatch } from "./services/dispatch.js";
 
 export function runBotCommand(
   dispatcher: Dispatch,
