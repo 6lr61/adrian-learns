@@ -20,6 +20,15 @@ module.exports = {
         prefer: "type-imports",
       },
     ],
+    rules: {
+      "@typescript-eslint/strict-boolean-expressions": [
+        "error",
+        {
+          allowString: true,
+          allowNullableObject: true,
+        },
+      ],
+    },
   },
   root: true,
 };
