@@ -4,6 +4,10 @@ type CooldownScope = "user" | "global";
 const globalCooldowns: CommandCooldown = new Map<string, Date>();
 const userCooldowns = new Map<string, CommandCooldown>();
 
+function dateSecondsFromNow(seconds: number): Date {
+  return new Date(Date.now() + seconds * 1_000);
+}
+
 export function coolingDownUntil(
   username: string,
   commandName: string,
@@ -19,10 +23,6 @@ export function coolingDownUntil(
   } else {
     return new Date(0);
   }
-}
-
-function dateSecondsFromNow(seconds: number): Date {
-  return new Date(Date.now() + seconds * 1_000);
 }
 
 export function setCooldown(
