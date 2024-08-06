@@ -36,7 +36,7 @@ function isWelcomeMessage(message: EventSubMessage): message is WelcomeMessage {
 }
 
 function isNotificationMessage(
-  message: EventSubMessage
+  message: EventSubMessage,
 ): message is NotificationMessage {
   return message.metadata.message_type === "notification";
 }
@@ -155,7 +155,7 @@ export function wsEventsubConnect(dispatcher: Dispatch) {
         case "channel.follow":
           dispatcher.say(
             `Hello, ${message.payload.event.user_name}!` +
-              " Thank you for the follow! How's it going?"
+              " Thank you for the follow! How's it going?",
           );
           break;
         case "channel.subscribe":
@@ -165,12 +165,12 @@ export function wsEventsubConnect(dispatcher: Dispatch) {
           ) {
             void sendChatAnnouncement(
               `Welcome as a subscriber ${message.payload.event.user_name}! GlitchCat`,
-              "purple"
+              "purple",
             );
           } else {
             void sendChatAnnouncement(
               `Thank you so much for subscribing ${message.payload.event.user_name}! I love you! VirtualHug`,
-              "blue"
+              "blue",
             );
           }
           break;
@@ -193,27 +193,27 @@ export function wsEventsubConnect(dispatcher: Dispatch) {
 
             void sendChatAnnouncement(
               `Thank you ${gifter} for the ${subGifts}! Thank you, thank you! VirtualHug ${totalGifted}`,
-              "blue"
+              "blue",
             );
           }
           break;
         case "channel.channel_points_custom_reward_redemption.add":
           if ("reward" in message.payload.event) {
             console.log(
-              `User ${message.payload.event.user_name} just redeemed ${message.payload.event.reward.title}!`
+              `User ${message.payload.event.user_name} just redeemed ${message.payload.event.reward.title}!`,
             );
           }
           break;
         default:
           console.log(
-            `Recieved a notificatio of type: ${message.payload.subscription.type}`
+            `Recieved a notificatio of type: ${message.payload.subscription.type}`,
           );
       }
     }
   });
 
   ws.on("close", (code) =>
-    console.error(`Connection closed with code: ${code}`)
+    console.error(`Connection closed with code: ${code}`),
   );
 }
 
@@ -221,7 +221,7 @@ async function subscribeToEvent(
   type: string,
   version: string,
   sessionID: string,
-  condition: Record<string, string>
+  condition: Record<string, string>,
 ) {
   const data = {
     type: type,
@@ -248,7 +248,7 @@ async function subscribeToEvent(
     type,
     "Got the response:",
     response.status,
-    response.statusText
+    response.statusText,
   );
 
   return response.status === 202;

@@ -72,7 +72,7 @@ export async function getToken(): Promise<Token> {
 async function twitchValidateToken(
   accessToken: string,
   timeout = 30_000,
-  attemptsLeft = 5
+  attemptsLeft = 5,
 ): Promise<Response | null> {
   try {
     if (attemptsLeft === 0) {
@@ -90,7 +90,7 @@ async function twitchValidateToken(
     return await twitchValidateToken(
       accessToken,
       timeout + 30_000,
-      attemptsLeft - 1
+      attemptsLeft - 1,
     );
   }
 }
@@ -109,7 +109,7 @@ export function borrowToken(): Token {
 }
 
 async function validateToken(
-  accessToken: string
+  accessToken: string,
 ): Promise<ValidTokenResponse | null> {
   /*
     1) The request might time out => TypeError from .json I think?

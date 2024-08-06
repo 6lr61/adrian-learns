@@ -115,7 +115,7 @@ async function fetchWithRetry(
   url: string | URL,
   content: RequestInit,
   timeout = 30_000,
-  attemptsLeft = 5
+  attemptsLeft = 5,
 ): Promise<Response | null> {
   try {
     if (attemptsLeft === 0) {
@@ -129,14 +129,14 @@ async function fetchWithRetry(
       url,
       content,
       timeout + 30_000,
-      attemptsLeft - 1
+      attemptsLeft - 1,
     );
   }
 }
 
 export async function sendChatAnnouncement(
   message: string,
-  color: HighlightColor
+  color: HighlightColor,
 ) {
   const url = new URL(`${TWITCH_HELIX_API}/chat/announcements`);
   url.searchParams.set("broadcaster_id", process.env.BROADCASTER_ID);
@@ -161,7 +161,7 @@ export async function sendChatAnnouncement(
 export async function timeoutUser(
   userId: string,
   time?: number,
-  reason?: string
+  reason?: string,
 ) {
   const url = new URL(`${TWITCH_HELIX_API}/moderation/bans`);
   url.searchParams.set("broadcaster_id", process.env.BROADCASTER_ID);
@@ -196,12 +196,12 @@ export async function timeoutUser(
   const data = (await response.json()) as BanResponse;
 
   console.log(
-    `Timed out user with ID: ${userId} until: ${data.data[0]?.end_time}`
+    `Timed out user with ID: ${userId} until: ${data.data[0]?.end_time}`,
   );
 }
 
 export async function getUserID(
-  username: string
+  username: string,
 ): Promise<{ display_name: string; login_name: string; id: string } | null> {
   const url = new URL(`${TWITCH_HELIX_API}/users`);
   url.searchParams.set("login", username);
@@ -234,7 +234,7 @@ export async function getUserID(
 
 export async function getFollowAge(
   dispatcher: Dispatch,
-  content: PrivateMessage
+  content: PrivateMessage,
 ): Promise<void> {
   const username =
     // Twitch usernames are limited to 25 characters
@@ -284,31 +284,31 @@ export async function getFollowAge(
     // We should format the date into something that's more useful
 
     const timestampFollowed = new Date(
-      data.data[0]?.followed_at || 0
+      data.data[0]?.followed_at || 0,
     ).valueOf();
     const daysFollowed = Math.floor(
-      (Date.now() - timestampFollowed) / 1000 / 60 / 60 / 24
+      (Date.now() - timestampFollowed) / 1000 / 60 / 60 / 24,
     );
 
     dispatcher.reply(
       content.tags.id,
       username === content.username
         ? `You've been following for ${daysFollowed} days!`
-        : `${user.display_name} has been following for ${daysFollowed} days.`
+        : `${user.display_name} has been following for ${daysFollowed} days.`,
     );
   } else {
     dispatcher.reply(
       content.tags.id,
       username === content.username
         ? "You're not following Adrian?"
-        : `${username} is not following Adrian.`
+        : `${username} is not following Adrian.`,
     );
   }
 }
 
 export async function getUptime(
   dispatcher: Dispatch,
-  content: PrivateMessage
+  content: PrivateMessage,
 ): Promise<void> {
   const url = new URL(`${TWITCH_HELIX_API}/streams`);
   url.searchParams.set("user_id", process.env.BROADCASTER_ID);
@@ -344,7 +344,7 @@ export async function getUptime(
 
     dispatcher.reply(
       content.tags.id,
-      "Adrian has been live for " + hoursString + minutesString
+      "Adrian has been live for " + hoursString + minutesString,
     );
     return;
   }
@@ -379,7 +379,7 @@ class MessageQueue {
     if (message.slice(WHISPER_CHARACTER_LIMIT)) {
       this.queueMessage(
         recipientUserID,
-        message.slice(WHISPER_CHARACTER_LIMIT)
+        message.slice(WHISPER_CHARACTER_LIMIT),
       );
     }
   }
@@ -431,7 +431,7 @@ class MessageQueue {
       console.error(
         "sendWhisper: Bad HTTP response:",
         response.status,
-        response.statusText
+        response.statusText,
       );
       return;
     }
@@ -447,14 +447,14 @@ export function sendWhisper(toUserID: string, message: string): void {
 
 export async function sendShoutout(
   dispatcher: Dispatch,
-  content: PrivateMessage
+  content: PrivateMessage,
 ): Promise<void> {
   const username = findNames(getAttributes(content))?.[0];
 
   if (!username) {
     dispatcher.error(
       "Couldn't find a valid username in the command attributes",
-      { messageId: content.tags.id }
+      { messageId: content.tags.id },
     );
     return;
   }
@@ -484,7 +484,7 @@ export async function sendShoutout(
 
     if (!response.ok) {
       throw new Error(
-        "Bad HTTP response: " + `${response.status}: ${response.statusText}`
+        "Bad HTTP response: " + `${response.status}: ${response.statusText}`,
       );
     }
   } catch (error) {
@@ -505,7 +505,7 @@ export async function sendShoutout(
 
     if (!response.ok) {
       throw new Error(
-        "Bad HTTP response: " + `${response.status}: ${response.statusText}`
+        "Bad HTTP response: " + `${response.status}: ${response.statusText}`,
       );
     }
 

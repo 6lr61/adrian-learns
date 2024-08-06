@@ -6,7 +6,7 @@ import type { Dispatch } from "./services/dispatch.js";
 
 export function runBotCommand(
   dispatcher: Dispatch,
-  messageContent: PrivateMessage
+  messageContent: PrivateMessage,
 ): void {
   const message = messageContent.message.trim();
   const commandName = message.split(" ")[0]?.toLocaleLowerCase();
@@ -30,12 +30,12 @@ export function runBotCommand(
       !hasPermission(
         commandName,
         messageContent,
-        commands[commandName]?.permission
+        commands[commandName]?.permission,
       )
     ) {
       dispatcher.error(
         `You don't have permission to use the ${commandName} command.`,
-        { userId: messageContent.tags.user_id }
+        { userId: messageContent.tags.user_id },
       );
       return;
     }
@@ -44,15 +44,15 @@ export function runBotCommand(
       const endingDate = coolingDownUntil(
         messageContent.username,
         commandName,
-        command.cooldown.scope
+        command.cooldown.scope,
       );
 
       if (endingDate.valueOf() > Date.now()) {
         dispatcher.whisper(
           messageContent.tags.user_id,
           `The ${commandName} command is currently on cooldown for another ${formatTimeUntil(
-            endingDate
-          )}` + ", please try again later."
+            endingDate,
+          )}` + ", please try again later.",
         );
         return;
       }
@@ -65,7 +65,7 @@ export function runBotCommand(
         messageContent.username,
         commandName,
         command.cooldown.scope,
-        command.cooldown.periodSeconds
+        command.cooldown.periodSeconds,
       );
     }
   }
@@ -76,7 +76,7 @@ export function runBotCommand(
 export function hasPermission(
   commandName: string,
   messageContent: PrivateMessage,
-  permission: string | undefined
+  permission: string | undefined,
 ): boolean {
   // To check the user permission, we have to look inside the tags
   const isMod = messageContent.tags?.mod === "1";

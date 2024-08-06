@@ -25,7 +25,7 @@ export interface CommandDeclaration {
   readonly help: string;
   readonly action: (
     dispatcher: Dispatch,
-    content: PrivateMessage
+    content: PrivateMessage,
   ) => void | Promise<void>;
 }
 
@@ -33,7 +33,7 @@ export function findNames(input: string): string[] | undefined {
   const matches = input
     // Try to match display names as well as Chinese, Japanese and Korean localized ones
     .match(
-      /(?<= *@?)[\w]+|[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\u3131-\uD79D]+/g
+      /(?<= *@?)[\w]+|[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\u3131-\uD79D]+/g,
     );
 
   if (matches) {
@@ -66,7 +66,7 @@ export const commands: Commands = {
     help: "The current VSCode Theme",
     action: async (dispatcher) =>
       dispatcher.say(
-        `Adrian is currently using the ${await readCurrentTheme()} theme in VSCode!`
+        `Adrian is currently using the ${await readCurrentTheme()} theme in VSCode!`,
       ),
     cooldown: { scope: "global", periodSeconds: 5 },
   },
@@ -74,7 +74,7 @@ export const commands: Commands = {
     help: "The current font used in VSCode",
     action: async (dispatcher) =>
       dispatcher.say(
-        `Adrian is currently using the ${await readCurrentFont()} font in VSCode!`
+        `Adrian is currently using the ${await readCurrentFont()} font in VSCode!`,
       ),
     cooldown: { scope: "global", periodSeconds: 5 },
   },
@@ -94,14 +94,14 @@ export const commands: Commands = {
     action: (dispatcher, content) =>
       dispatcher.reply(
         content.tags.id,
-        `It's a potato, ${getName(content)} mericCat`
+        `It's a potato, ${getName(content)} mericCat`,
       ),
   },
   "!cursed": {
     help: "Gives a percentage for how cursed the chatter themself are",
     action: (dispatcher, content) =>
       dispatcher.say(
-        `${getName(content)} is ${randomInt(100 + 1)}% cursed! confusedCat`
+        `${getName(content)} is ${randomInt(100 + 1)}% cursed! confusedCat`,
       ),
     cooldown: { scope: "user", periodSeconds: 15 },
   },
@@ -109,7 +109,7 @@ export const commands: Commands = {
     help: "An advanced AI model of Athano that gives a suitable reply in every context",
     action: (dispatcher) =>
       dispatcher.say(
-        "The answer is of course: It's nuanced and contextual CatNerd"
+        "The answer is of course: It's nuanced and contextual CatNerd",
       ),
   },
   "!tkap": {
@@ -130,7 +130,7 @@ export const commands: Commands = {
     action: (dispatcher, content) =>
       dispatcher.reply(
         content.tags.id,
-        `Good morning, ${getName(content)} catYawn`
+        `Good morning, ${getName(content)} catYawn`,
       ),
   },
   "!night": {
@@ -138,7 +138,7 @@ export const commands: Commands = {
     action: (dispatcher, content) =>
       dispatcher.reply(
         content.tags.id,
-        `Good night and sleep tight, ${name}! catTuck`
+        `Good night and sleep tight, ${name}! catTuck`,
       ),
   },
   "!lurk": {
@@ -146,7 +146,7 @@ export const commands: Commands = {
     action: (dispatcher, content) =>
       dispatcher.reply(
         content.tags.id,
-        `Thank you for lurking, ${getName(content)}! catLurk`
+        `Thank you for lurking, ${getName(content)}! catLurk`,
       ),
   },
   "!unlurk": {
@@ -154,7 +154,7 @@ export const commands: Commands = {
     action: (dispatcher, content) =>
       dispatcher.reply(
         content.tags.id,
-        `Welcome back ${getName(content)}! catArrive`
+        `Welcome back ${getName(content)}! catArrive`,
       ),
   },
   "!right": {
@@ -167,7 +167,7 @@ export const commands: Commands = {
     help: "Agrees that the conversation is over",
     action: (dispatcher, content) =>
       dispatcher.say(
-        `I agree @${getName(content)}, there's not much left to say baseg`
+        `I agree @${getName(content)}, there's not much left to say baseg`,
       ),
     permission: "mod",
   },
@@ -184,7 +184,7 @@ export const commands: Commands = {
       dispatcher.say(
         person
           ? `${name} gives ${person} a hug! CatAHomie`
-          : `${name} gives chat a hug! catKISS`
+          : `${name} gives chat a hug! catKISS`,
       );
     },
   },
@@ -192,11 +192,11 @@ export const commands: Commands = {
     help: "Sets and starts and on-screen timer. Usage: !brb [time-minutes] [a brb reason]",
     action: (_, content) => {
       const args = getAttributes(content).match(
-        /(?<time>[0-9]+)? ?(?<message>.*)/
+        /(?<time>[0-9]+)? ?(?<message>.*)/,
       )?.groups;
       return startTimer(
         parseInt(args?.time || "5") * 60,
-        args?.message || "Be right back!"
+        args?.message || "Be right back!",
       );
     },
     permission: "streamer",
@@ -224,7 +224,7 @@ export const commands: Commands = {
 
 function listCommands(commands: Commands, content: PrivateMessage) {
   const commandNames = Object.keys(commands).filter((commandName) =>
-    hasPermission(commandName, content, commands[commandName]?.permission)
+    hasPermission(commandName, content, commands[commandName]?.permission),
   );
   return "The commands available to you are: " + commandNames.join(", ");
 }

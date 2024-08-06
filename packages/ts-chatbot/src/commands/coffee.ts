@@ -30,7 +30,7 @@ async function readCoffee(): Promise<Coffee | null> {
 
 export async function makeACupOfCoffee(
   dispatcher: Dispatch,
-  content: PrivateMessage
+  content: PrivateMessage,
 ): Promise<void> {
   const randomNumber = randomInt(100); // [0, 100[
   const name = getName(content);
@@ -49,12 +49,12 @@ export async function makeACupOfCoffee(
     // Here you go @name, it's [a cold] cup of [moka pot] [espresso], served in a [small] [toy car].
     dispatcher.say(
       `Here you go ${name}, it's ${getRandom(
-        coffee.descriptions
+        coffee.descriptions,
       )} cup of ${getRandom(
-        coffee.espressoTypes
+        coffee.espressoTypes,
       )} espresso, served in ${getRandom(coffee.cupTypes)} ${getRandom(
-        coffee.cups
-      )}.`
+        coffee.cups,
+      )}.`,
     );
     return;
   } else if (randomNumber < 50) {
@@ -62,10 +62,10 @@ export async function makeACupOfCoffee(
     // Here you go @name, it's [a cold] cup of [perculator] coffee, served in a [small] [toy car].
     dispatcher.say(
       `Here you go ${name}, it's ${getRandom(
-        coffee.descriptions
+        coffee.descriptions,
       )} cup of ${getRandom(coffee.coffeeTypes)} coffee, served in ${getRandom(
-        coffee.cupTypes
-      )} ${getRandom(coffee.cups)}.`
+        coffee.cupTypes,
+      )} ${getRandom(coffee.cups)}.`,
     );
     return;
   } else {
@@ -73,12 +73,12 @@ export async function makeACupOfCoffee(
     // Here you go @name, it's [a lukewarm] cup of [soy milk] [pumpkin spice] [latte], served in a [large] [styrofoam mug].
     dispatcher.say(
       `Here you go ${name}, it's ${getRandom(
-        coffee.descriptions
+        coffee.descriptions,
       )} cup of ${getRandom(coffee.milkTypes)} milk ${getRandom(
-        coffee.drinkToppings
+        coffee.drinkToppings,
       )} ${getRandom(coffee.drinkTypes)}, served in ${getRandom(
-        coffee.cupTypes
-      )} ${getRandom(coffee.cups)}.`
+        coffee.cupTypes,
+      )} ${getRandom(coffee.cups)}.`,
     );
     return;
   }

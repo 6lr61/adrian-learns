@@ -64,7 +64,7 @@ function parseTemplate(message: PrivateMessage, command: CommandDescription) {
       case "{%username%}":
         response = response.replace(
           variable,
-          message.tags.display_name || message.username
+          message.tags.display_name || message.username,
         );
         break;
     }

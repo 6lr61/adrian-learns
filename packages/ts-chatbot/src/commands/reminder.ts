@@ -6,7 +6,7 @@ const DEFAULT_REMINDER_MESSAGE = "Default Timer";
 export function setReminder(attributes: string): string {
   // [time in minutes] then a reminder message
   const things = attributes.match(
-    /(?<time>[0-9]+)? ?(?<message>[\w ]*)/
+    /(?<time>[0-9]+)? ?(?<message>[\w ]*)/,
   )?.groups;
 
   if (!things) {
@@ -34,9 +34,9 @@ export function setReminder(attributes: string): string {
         `The timer for "${
           things.message || DEFAULT_REMINDER_MESSAGE
         }" ran out!`,
-        "green"
+        "green",
       ),
-    timeMillis
+    timeMillis,
   );
 
   return `Setting a reminder for "${things.message}" in ${things.time} minutes!`;

@@ -45,14 +45,14 @@ export function alias(dispatcher: Dispatch, content: PrivateMessage): void {
         if (!alias) {
           dispatcher.error(
             `The command ${args[1]} is not an alias to anything.`,
-            { messageId: content.tags.id }
+            { messageId: content.tags.id },
           );
           return;
         }
 
         dispatcher.reply(
           content.tags.id,
-          `The command ${args[1]} is an alias for ${getAlias(args[1])}`
+          `The command ${args[1]} is an alias for ${getAlias(args[1])}`,
         );
       }
       break;
@@ -70,7 +70,7 @@ export function alias(dispatcher: Dispatch, content: PrivateMessage): void {
         if (!command) {
           dispatcher.error(
             `The command ${args[1]} is not an alias to anything.`,
-            { messageId: content.tags.id }
+            { messageId: content.tags.id },
           );
           return;
         }
@@ -94,7 +94,7 @@ export function alias(dispatcher: Dispatch, content: PrivateMessage): void {
 
         dispatcher.reply(
           content.tags.id,
-          `${args[1]} is now an alias for ${args[2]}`
+          `${args[1]} is now an alias for ${args[2]}`,
         );
       }
       break;

@@ -17,7 +17,7 @@ export function formatTimeUntil(endingTime: Date) {
 export function coolingDownUntil(
   username: string,
   commandName: string,
-  scope: CooldownScope
+  scope: CooldownScope,
 ): Date {
   const endingTime =
     scope === "global"
@@ -39,7 +39,7 @@ export function setCooldown(
   username: string,
   commandName: string,
   scope: CooldownScope,
-  periodSeconds: number
+  periodSeconds: number,
 ): void {
   if (scope === "global") {
     globalCooldowns.set(commandName, dateSecondsFromNow(periodSeconds));
