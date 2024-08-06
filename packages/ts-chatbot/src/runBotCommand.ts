@@ -1,48 +1,15 @@
-import { onCooldownUntil, setCooldown } from "./cooldown.js";
+import { onCooldownUntil } from "./cooldown.js";
 import { commands, type CommandDeclaration } from "./commands/commands.js";
 import { type PrivateMessage } from "ts-twitch-irc";
 import { getAlias } from "./commands/alias.js";
+import type { Dispatch } from "./bot.js";
 
-export type BotResponse =
-  | BotChatMessage
-  | BotReplyMessage
-  | BotWhisper
-  | BotError;
-
-interface BotChatMessage {
-  type: "chat";
-  message: string;
-}
-
-interface BotReplyMessage {
-  type: "reply";
-  messageId: string;
-  message: string;
-}
-
-interface BotWhisper {
-  type: "whisper";
-  userId: string;
-  message: string;
-}
-
-interface BotError {
-  type: "error";
-  userId?: string;
-  messageId?: string;
-  message: string;
-}
-
-export async function runBotCommand(
-  messageContent: PrivateMessage,
-): Promise<BotResponse | undefined> {
+export function runBotCommand(
+  dispatcher: Dispatch,
+  messageContent: PrivateMessage
+): void {
   const message = messageContent.message.trim();
   const commandName = message.split(" ")[0]?.toLocaleLowerCase();
-  const spaceIndex = message.indexOf(" ");
-  const attributes =
-    spaceIndex !== -1 ? message.slice(message.indexOf(" ") + 1) : "";
-
-  const name = messageContent.tags?.display_name || messageContent.username;
 
   if (!commandName) {
     return;
@@ -59,53 +26,51 @@ export async function runBotCommand(
   }
 
   if (command) {
-    if (command.cooldown) {
-      const cooldownMessage = onCooldownUntil(
-        messageContent.username,
-        commandName,
-        command.cooldown.scope,
-      );
-
-      if (cooldownMessage) {
-        return {
-          type: "whisper",
-          message:
-            `The ${commandName} command is currently on cooldown for another ${cooldownMessage}` +
-            ", please try again later.",
-          userId: messageContent.tags.user_id,
-        };
-      }
-    }
-
-    // Check so that the user has permissions to use the command
     if (
       !userHasPermissions(
         commandName,
         messageContent,
-        commands[commandName]?.permission,
+        commands[commandName]?.permission
       )
     ) {
-      return {
-        type: "error",
-        message: `You don't have permission to use the ${commandName} command.`,
-        userId: messageContent.tags.user_id,
-      };
+      dispatcher.error(
+        `You don't have permission to use the ${commandName} command.`,
+        { userId: messageContent.tags.user_id }
+      );
     }
 
-    const botResponse = await command.action(name, attributes, messageContent);
+    if (command.cooldown) {
+      const cooldownMessage = onCooldownUntil(
+        messageContent.username,
+        commandName,
+        command.cooldown.scope
+      );
 
+      if (cooldownMessage) {
+        dispatcher.whisper(
+          messageContent.tags.user_id,
+          `The ${commandName} command is currently on cooldown for another ${cooldownMessage}` +
+            ", please try again later."
+        );
+      }
+    }
+
+    void command.action(dispatcher, messageContent);
+
+    /* TODO: Figure out how to do the cooldowns
     if (botResponse?.type !== "error" && command.cooldown) {
       setCooldown(
         messageContent.username,
         commandName,
         command.cooldown.scope,
-        command.cooldown.periodSeconds,
+        command.cooldown.periodSeconds
       );
     }
 
     if (botResponse) {
       return botResponse;
     }
+    */
   }
 
   return;
@@ -114,7 +79,7 @@ export async function runBotCommand(
 export function userHasPermissions(
   commandName: string,
   messageContent: PrivateMessage,
-  permission: string | undefined,
+  permission: string | undefined
 ): boolean {
   // To check the user permission, we have to look inside the tags
   const isMod = messageContent.tags?.mod === "1";

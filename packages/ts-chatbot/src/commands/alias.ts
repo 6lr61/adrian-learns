@@ -1,6 +1,7 @@
+import type { Dispatch } from "../bot.js";
 import { botStorage } from "../botStorage.js";
-import type { CommandResponse } from "./commands.js";
 import type { PrivateMessage } from "ts-twitch-irc";
+import { getAttributes } from "./commands.js";
 
 export function getAlias(alias: string): string | undefined {
   alias = alias.trim();
@@ -26,85 +27,81 @@ function setAlias(alias: string, command: string): void {
   botStorage.set("aliases", aliases);
 }
 
-export function alias(input: string, content: PrivateMessage): CommandResponse {
-  const args = input.split(" ").filter(Boolean);
+export function alias(dispatcher: Dispatch, content: PrivateMessage): void {
+  const args = getAttributes(content).split(" ").filter(Boolean);
 
   switch (args[0]) {
-    case "get": {
-      if (!args[1]) {
-        return {
-          type: "error",
-          message: "Usage: !alias get <!alias>",
-          messageId: content.tags.id,
-        };
+    case "get":
+      {
+        if (!args[1]) {
+          dispatcher.error("Usage: !alias get <!alias>", {
+            messageId: content.tags.id,
+          });
+          return;
+        }
+
+        const alias = getAlias(args[1]);
+
+        if (!alias) {
+          dispatcher.error(
+            `The command ${args[1]} is not an alias to anything.`,
+            { messageId: content.tags.id }
+          );
+          return;
+        }
+
+        dispatcher.reply(
+          content.tags.id,
+          `The command ${args[1]} is an alias for ${getAlias(args[1])}`
+        );
       }
+      break;
+    case "remove":
+      {
+        if (!args[1]) {
+          dispatcher.error("Usage: !alias remove <!alias>", {
+            messageId: content.tags.id,
+          });
+          return;
+        }
 
-      const alias = getAlias(args[1]);
+        const command = getAlias(args[1]);
 
-      if (!alias) {
-        return {
-          type: "error",
-          message: `The command ${args[1]} is not an alias to anything.`,
-          messageId: content.tags.id,
-        };
+        if (!command) {
+          dispatcher.error(
+            `The command ${args[1]} is not an alias to anything.`,
+            { messageId: content.tags.id }
+          );
+          return;
+        }
+
+        // TODO: Refactor this to return a boolean?
+        removeAlias(args[1]);
+
+        dispatcher.reply(content.tags.id, `Remove the alias ${args[1]}`);
       }
+      break;
+    case "set":
+      {
+        if (!args || args.length !== 3 || !args[1] || !args[2]) {
+          dispatcher.error("Usage: !alias set <!alias> <!command>", {
+            messageId: content.tags.id,
+          });
+          return;
+        }
 
-      return {
-        type: "reply",
-        message: `The command ${args[1]} is an alias for ${getAlias(args[1])}`,
-        messageId: content.tags.id,
-      };
-    }
-    case "remove": {
-      if (!args[1]) {
-        return {
-          type: "error",
-          message: "Usage: !alias remove <!alias>",
-          messageId: content.tags.id,
-        };
+        setAlias(args[1], args[2]);
+
+        dispatcher.reply(
+          content.tags.id,
+          `${args[1]} is now an alias for ${args[2]}`
+        );
       }
-
-      const command = getAlias(args[1]);
-
-      if (!command) {
-        return {
-          type: "error",
-          message: `The command ${args[1]} is not an alias to anything.`,
-          messageId: content.tags.id,
-        };
-      }
-
-      removeAlias(args[1]);
-
-      return {
-        type: "reply",
-        message: `Remove the alias ${args[1]}`,
-        messageId: content.tags.id,
-      };
-    }
-    case "set": {
-      if (!args || args.length !== 3 || !args[1] || !args[2]) {
-        return {
-          type: "error",
-          message: "Usage: !alias set <!alias> <!command>",
-          messageId: content.tags.id,
-        };
-      }
-
-      setAlias(args[1], args[2]);
-
-      return {
-        type: "error",
-        message: `${args[1]} is now an alias for ${args[2]}`,
-        messageId: content.tags.id,
-      };
-    }
+      break;
     default: {
-      return {
-        type: "error",
-        message: "Usage: !alias <get|remove|set> <!alias> [!command]",
+      dispatcher.error("Usage: !alias <get|remove|set> <!alias> [!command]", {
         messageId: content.tags.id,
-      };
+      });
     }
   }
 }

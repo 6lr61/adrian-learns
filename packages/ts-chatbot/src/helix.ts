@@ -1,7 +1,7 @@
 import { borrowToken, getToken } from "./auth.js";
 import { type PrivateMessage } from "ts-twitch-irc";
-import type { BotResponse } from "./runBotCommand.js";
-import { findNames, type CommandResponse } from "./commands/commands.js";
+import { findNames, getAttributes } from "./commands/commands.js";
+import type { Dispatch } from "./bot.js";
 
 const TWITCH_HELIX_API = "https://api.twitch.tv/helix";
 
@@ -159,7 +159,7 @@ export async function sendChatAnnouncement(
 }
 
 export async function timeoutUser(
-  content: PrivateMessage,
+  userId: string,
   time?: number,
   reason?: string
 ) {
@@ -169,7 +169,7 @@ export async function timeoutUser(
 
   const request: BanRequest = {
     data: {
-      user_id: content.tags.user_id, // string
+      user_id: userId,
       duration: time || 1, // number
     },
   };
@@ -196,7 +196,7 @@ export async function timeoutUser(
   const data = (await response.json()) as BanResponse;
 
   console.log(
-    `Timed out user: ${content.username} until: ${data.data[0]?.end_time}`
+    `Timed out user with ID: ${userId} until: ${data.data[0]?.end_time}`
   );
 }
 
@@ -233,13 +233,14 @@ export async function getUserID(
 }
 
 export async function getFollowAge(
-  name: string,
-  attributes: string,
+  dispatcher: Dispatch,
   content: PrivateMessage
-): Promise<BotResponse | undefined> {
+): Promise<void> {
   const username =
     // Twitch usernames are limited to 25 characters
-    attributes.match(/^@?([\w]{1,25})/)?.[1]?.toLowerCase() || content.username;
+    getAttributes(content)
+      .match(/^@?([\w]{1,25})/)?.[1]
+      ?.toLowerCase() || content.username;
 
   let user: { display_name: string; id: string } | null = {
     display_name: username,
@@ -252,11 +253,10 @@ export async function getFollowAge(
 
   if (!user) {
     console.error("Follower age: Bad response");
-    return {
-      type: "error",
-      message: `Couldn't find user: ${username}`,
+    dispatcher.error(`Couldn't find user: ${username}`, {
       messageId: content.tags.id,
-    };
+    });
+    return;
   }
 
   // Follow age look-up
@@ -290,29 +290,26 @@ export async function getFollowAge(
       (Date.now() - timestampFollowed) / 1000 / 60 / 60 / 24
     );
 
-    return {
-      type: "reply",
-      message:
-        username === content.username
-          ? `You've been following for ${daysFollowed} days!`
-          : `${user.display_name} has been following for ${daysFollowed} days.`,
-      messageId: content.tags.id,
-    };
+    dispatcher.reply(
+      content.tags.id,
+      username === content.username
+        ? `You've been following for ${daysFollowed} days!`
+        : `${user.display_name} has been following for ${daysFollowed} days.`
+    );
   } else {
-    return {
-      type: "error",
-      message:
-        username === content.username
-          ? "You're not following Adrian?"
-          : `${username} is not following Adrian.`,
-      messageId: content.tags.id,
-    };
+    dispatcher.reply(
+      content.tags.id,
+      username === content.username
+        ? "You're not following Adrian?"
+        : `${username} is not following Adrian.`
+    );
   }
 }
 
 export async function getUptime(
+  dispatcher: Dispatch,
   content: PrivateMessage
-): Promise<CommandResponse> {
+): Promise<void> {
   const url = new URL(`${TWITCH_HELIX_API}/streams`);
   url.searchParams.set("user_id", process.env.BROADCASTER_ID);
 
@@ -332,11 +329,8 @@ export async function getUptime(
   const data = (await response.json()) as GetStreamsResponse;
 
   if (data.data.length === 0) {
-    return {
-      type: "reply",
-      message: "Adrian is currently not live",
-      messageId: content.tags.id,
-    };
+    dispatcher.reply(content.tags.id, "Adrian is currently not live");
+    return;
   }
 
   if (typeof data.data[0]?.started_at === "string") {
@@ -348,16 +342,14 @@ export async function getUptime(
       hours > 0 ? `${hours} hour` + (hours === 1 ? "" : "s") + " and " : "";
     const minutesString = `${minutes} minute` + (minutes === 1 ? "" : "s");
 
-    return {
-      type: "reply",
-      message: "Adrian has been live for " + hoursString + minutesString,
-      messageId: content.tags.id,
-    };
+    dispatcher.reply(
+      content.tags.id,
+      "Adrian has been live for " + hoursString + minutesString
+    );
+    return;
   }
 
-  console.error(
-    "getUptime: Something went from when trying to get stream information"
-  );
+  dispatcher.error("Something went from when trying to get stream information");
 }
 
 interface Whisper {
@@ -454,28 +446,26 @@ export function sendWhisper(toUserID: string, message: string): void {
 }
 
 export async function sendShoutout(
-  _name: unknown,
-  attr: string,
+  dispatcher: Dispatch,
   content: PrivateMessage
-): Promise<CommandResponse> {
-  const username = findNames(attr)?.[0];
+): Promise<void> {
+  const username = findNames(getAttributes(content))?.[0];
 
   if (!username) {
-    return {
-      type: "error",
-      message: "Couldn't find a valid username in the command attributes",
-      messageId: content.tags.id,
-    };
+    dispatcher.error(
+      "Couldn't find a valid username in the command attributes",
+      { messageId: content.tags.id }
+    );
+    return;
   }
 
   const userData = await getUserID(username);
 
   if (!userData) {
-    return {
-      type: "error",
-      message: `Couldn't find user: ${username}`,
+    dispatcher.error(`Couldn't find user: ${username}`, {
       messageId: content.tags.id,
-    };
+    });
+    return;
   }
 
   const url = new URL(`${TWITCH_HELIX_API}/chat/shoutouts`);
@@ -523,11 +513,10 @@ export async function sendShoutout(
     const channel = data.data[0];
 
     if (!channel) {
-      return {
-        type: "error",
-        message: "No entry in channel information?",
+      dispatcher.error("No entry in channel information?", {
         messageId: content.tags.id,
-      };
+      });
+      return;
     }
 
     const message = `🚨 Checkout ${channel.broadcaster_name} 🚨, they were last streaming ${channel.game_name} 🤯 and their stream title was 👉 ${channel.title}`;

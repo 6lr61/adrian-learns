@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-const SETTINGS_JSON_PATH = "/home/adrian/.config/Code/User/settings.json";
+const SETTINGS_JSON_PATH = "/home/learns/.config/Code/User/settings.json";
 
 export async function readCurrentTheme() {
   const contents = await readFile(SETTINGS_JSON_PATH, { encoding: "utf8" });

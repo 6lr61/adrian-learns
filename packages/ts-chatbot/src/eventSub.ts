@@ -1,7 +1,7 @@
 import { WebSocket } from "ws";
-import { sendChatMessage } from "./bot.js";
 import { sendChatAnnouncement } from "./helix.js";
 import { getToken } from "./auth.js";
+import type { Dispatch } from "./bot.js";
 
 const TWITCH_EVENTSUB = "wss://eventsub.wss.twitch.tv/ws";
 const TWITCH_SUBSCRIBE_API =
@@ -132,7 +132,7 @@ interface ChannelPointsRedemptionEvent extends ChannelEvent {
 // At this point, we have 10 seconds to subscribe to one or
 // more events!
 
-export function wsEventsubConnect() {
+export function wsEventsubConnect(dispatcher: Dispatch) {
   const ws = new WebSocket(TWITCH_EVENTSUB);
 
   let sessionID: string;
@@ -153,12 +153,10 @@ export function wsEventsubConnect() {
     } else if (isNotificationMessage(message)) {
       switch (message.payload.subscription.type) {
         case "channel.follow":
-          sendChatMessage({
-            type: "chat",
-            message:
-              `Hello, ${message.payload.event.user_name}!` +
-              " Thank you for the follow! How's it going?",
-          });
+          dispatcher.say(
+            `Hello, ${message.payload.event.user_name}!` +
+              " Thank you for the follow! How's it going?"
+          );
           break;
         case "channel.subscribe":
           if (
