@@ -9,5 +9,5 @@
     "outDir": "dist",
     "noEmitOnError": true,
     "sourceMap": true
-  }
+  }, "include": ["lib/"]
 }

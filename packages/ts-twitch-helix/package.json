@@ -2,9 +2,12 @@
   "name": "ts-twitch-helix",
   "private": "true",
   "version": "0.0.1",
+  "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "prestart": "tsc",
+    "start": "node dist",
     "test": "vitest"
   },
   "keywords": [],
@@ -12,11 +15,7 @@
   "license": "LGPL-3.0",
   "devDependencies": {
     "@types/node": "^20.9.0",
+    "typescript": "^5.5.4",
     "vitest": "^2.0.2"
-  },
-  "directories": {
-    "lib": "lib",
-    "test": "test"
-  },
-  "description": ""
+  }
 }
