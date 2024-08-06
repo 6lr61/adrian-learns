@@ -4,7 +4,9 @@
   "main": "index.js",
   "private": "true",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test --workspaces",
+    "build": "tsc -b tsconfig.build.json",
+    "dev": "tsc -b -w tsconfig.build.json"
   },
   "author": "",
   "license": "ISC",
