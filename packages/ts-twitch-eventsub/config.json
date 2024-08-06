@@ -1,0 +1,13 @@
+{
+  "subscribeToEvent": {
+    "channel.cheer": true,
+    "channel.follow": true,
+    "channel.raid": true,
+    "channel.shoutout.create": true,
+    "channel.subscribe": true,
+    "channel.subscription.gift": true,
+    "channel.subscription.message": true,
+    "channel.channel_points_custom_reward_redemption.add": true,
+    "channel.channel_points_custom_reward_redemption.update": true
+  }
+}

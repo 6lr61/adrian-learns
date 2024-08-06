@@ -1,0 +1,18 @@
+{
+  "display": "Node 18",
+
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "outDir": "dist",
+    "sourceMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "NodeNext",
+    "noUncheckedIndexedAccess": true
+  },
+
+  "exclude": ["node_modules"]
+}
