@@ -9,7 +9,7 @@ import { sendWhisper } from "./helix.js";
 
 // Before we connect to any Twitch API, we have to check that our OAuth token is valid!
 // Otherwise things will try to validate it and fail
-void (await getToken());
+await getToken();
 
 // Here we can register the event handlers, for 'message'
 // -> parse the IRC messages and respond to commands like PING!
