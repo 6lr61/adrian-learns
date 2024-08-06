@@ -1,4 +1,4 @@
-import { onCooldownUntil } from "./cooldown.js";
+import { coolingDownUntil, formatTimeUntil, setCooldown } from "./cooldown.js";
 import { commands, type CommandDeclaration } from "./commands/commands.js";
 import { type PrivateMessage } from "ts-twitch-irc";
 import { getAlias } from "./commands/alias.js";
@@ -27,7 +27,7 @@ export function runBotCommand(
 
   if (command) {
     if (
-      !userHasPermissions(
+      !hasPermission(
         commandName,
         messageContent,
         commands[commandName]?.permission
@@ -37,28 +37,30 @@ export function runBotCommand(
         `You don't have permission to use the ${commandName} command.`,
         { userId: messageContent.tags.user_id }
       );
+      return;
     }
 
     if (command.cooldown) {
-      const cooldownMessage = onCooldownUntil(
+      const endingDate = coolingDownUntil(
         messageContent.username,
         commandName,
         command.cooldown.scope
       );
 
-      if (cooldownMessage) {
+      if (endingDate.valueOf() > Date.now()) {
         dispatcher.whisper(
           messageContent.tags.user_id,
-          `The ${commandName} command is currently on cooldown for another ${cooldownMessage}` +
-            ", please try again later."
+          `The ${commandName} command is currently on cooldown for another ${formatTimeUntil(
+            endingDate
+          )}` + ", please try again later."
         );
+        return;
       }
     }
 
     void command.action(dispatcher, messageContent);
 
-    /* TODO: Figure out how to do the cooldowns
-    if (botResponse?.type !== "error" && command.cooldown) {
+    if (command.cooldown) {
       setCooldown(
         messageContent.username,
         commandName,
@@ -66,17 +68,12 @@ export function runBotCommand(
         command.cooldown.periodSeconds
       );
     }
-
-    if (botResponse) {
-      return botResponse;
-    }
-    */
   }
 
   return;
 }
 
-export function userHasPermissions(
+export function hasPermission(
   commandName: string,
   messageContent: PrivateMessage,
   permission: string | undefined
