@@ -4,16 +4,6 @@ type CooldownScope = "user" | "global";
 const globalCooldowns: CommandCooldown = new Map<string, Date>();
 const userCooldowns = new Map<string, CommandCooldown>();
 
-export function formatTimeUntil(endingTime: Date) {
-  const timeLeft = new Date(endingTime.valueOf() - Date.now());
-  const minutesLeft = timeLeft.getMinutes();
-  const secondsLeft = timeLeft.getSeconds();
-  const minutes = `${minutesLeft} minute` + (minutesLeft !== 1 ? "s" : "");
-  const seconds = `${secondsLeft} second` + (secondsLeft !== 1 ? "s" : "");
-
-  return (minutesLeft > 0 ? `${minutes} and ` : "") + seconds;
-}
-
 export function coolingDownUntil(
   username: string,
   commandName: string,

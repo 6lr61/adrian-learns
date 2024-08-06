@@ -1,5 +1,5 @@
 import type { PrivateMessage } from "ts-twitch-irc";
-import { runBotCommand } from "../../runBotCommand.js";
+import { runCommand } from "./runCommand.js";
 import type { Dispatch } from "../../services/dispatch.js";
 
 export function parseCommand(
@@ -10,6 +10,6 @@ export function parseCommand(
   console.log(`${messageContent.username}: ${messageContent.message}`);
 
   if (messageContent.message.startsWith("!")) {
-    void runBotCommand(dispatcher, messageContent);
+    void runCommand(dispatcher, messageContent);
   }
 }

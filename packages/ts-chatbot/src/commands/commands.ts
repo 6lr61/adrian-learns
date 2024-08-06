@@ -8,7 +8,7 @@ import { makeACupOfCoffee } from "./coffee.js";
 import { startTimer, clearTimer } from "../services/websocket.js";
 import { readCurrentFont, readCurrentTheme } from "./vscode.js";
 import { setReminder } from "./reminder.js";
-import { hasPermission } from "../runBotCommand.js";
+import { hasPermission } from "./utils/hasPermission.js";
 import { type PrivateMessage } from "ts-twitch-irc";
 import { alias } from "./alias.js";
 import { randomInt } from "node:crypto";

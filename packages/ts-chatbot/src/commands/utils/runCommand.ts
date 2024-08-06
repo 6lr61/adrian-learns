@@ -1,10 +1,21 @@
-import { coolingDownUntil, formatTimeUntil, setCooldown } from "./cooldown.js";
-import { commands, type CommandDeclaration } from "./commands/commands.js";
+import { coolingDownUntil, setCooldown } from "./cooldown.js";
+import { commands, type CommandDeclaration } from "../commands.js";
 import { type PrivateMessage } from "ts-twitch-irc";
-import { getAlias } from "./commands/alias.js";
-import type { Dispatch } from "./services/dispatch.js";
+import { getAlias } from "../alias.js";
+import type { Dispatch } from "../../services/dispatch.js";
+import { hasPermission } from "./hasPermission.js";
 
-export function runBotCommand(
+function formatTimeUntil(endingTime: Date) {
+  const timeLeft = new Date(endingTime.valueOf() - Date.now());
+  const minutesLeft = timeLeft.getMinutes();
+  const secondsLeft = timeLeft.getSeconds();
+  const minutes = `${minutesLeft} minute` + (minutesLeft !== 1 ? "s" : "");
+  const seconds = `${secondsLeft} second` + (secondsLeft !== 1 ? "s" : "");
+
+  return (minutesLeft > 0 ? `${minutes} and ` : "") + seconds;
+}
+
+export function runCommand(
   dispatcher: Dispatch,
   messageContent: PrivateMessage,
 ): void {
@@ -71,26 +82,4 @@ export function runBotCommand(
   }
 
   return;
-}
-
-export function hasPermission(
-  commandName: string,
-  messageContent: PrivateMessage,
-  permission: string | undefined,
-): boolean {
-  // To check the user permission, we have to look inside the tags
-  const isMod = messageContent.tags?.mod === "1";
-  const isVip = /vip/.test(messageContent.tags?.badges || "");
-
-  // If it's a mod or vip, then they are allowed to run user commands
-  switch (permission) {
-    case "streamer":
-      return messageContent.username === process.env.BROADCASTER_LOGIN;
-    case "mod":
-      return isMod || messageContent.username === process.env.BROADCASTER_LOGIN;
-    case "vip":
-      return isVip || messageContent.username === process.env.BROADCASTER_LOGIN;
-    default:
-      return true;
-  }
 }
