@@ -8,7 +8,7 @@ import { makeACupOfCoffee } from "./coffee.js";
 import { startTimer, clearTimer } from "../services/websocket.js";
 import { readCurrentFont, readCurrentTheme } from "./vscode.js";
 import { setReminder } from "./reminder.js";
-import { userHasPermissions } from "../runBotCommand.js";
+import { hasPermission } from "../runBotCommand.js";
 import { type PrivateMessage } from "ts-twitch-irc";
 import { alias } from "./alias.js";
 import { randomInt } from "node:crypto";
@@ -224,7 +224,7 @@ export const commands: Commands = {
 
 function listCommands(commands: Commands, content: PrivateMessage) {
   const commandNames = Object.keys(commands).filter((commandName) =>
-    userHasPermissions(commandName, content, commands[commandName]?.permission)
+    hasPermission(commandName, content, commands[commandName]?.permission)
   );
   return "The commands available to you are: " + commandNames.join(", ");
 }
