@@ -1,36 +1,54 @@
-import { sendChatAnnouncement } from "../helix.js";
+import type { Helix } from "ts-twitch-helix";
+import type { PrivateMessage } from "ts-twitch-irc";
+import type { Dispatch } from "../services/Dispatch.js";
+import { getAttributes } from "./commands.js";
 
 const DEFAULT_TIME = 5; // minutes
 const DEFAULT_REMINDER_MESSAGE = "Default Timer";
 
-export function setReminder(attributes: string): string {
+export async function reminder(
+  dispatcher: Dispatch,
+  content: PrivateMessage,
+  helix: Helix,
+): Promise<void> {
   // [time in minutes] then a reminder message
-  const things = attributes.match(
+  const things = getAttributes(content).match(
     /(?<time>[0-9]+)? ?(?<message>[\w ]*)/,
   )?.groups;
 
   if (!things) {
-    return "I don't understand the input?";
+    dispatcher.error("I don't understand the input?", {
+      messageId: content.tags.id,
+    });
+    return;
   }
 
   if (!things.time) {
-    // We should use a default time
     things.time = DEFAULT_TIME.toString();
   }
 
   if (parseInt(things.time) > 120 || things.time === "0") {
-    return "Please keep the time to under 2 hours and greater than 0 minutes.";
+    dispatcher.error(
+      "Please keep the time to under 2 hours and longer than 0 minutes.",
+      {
+        messageId: content.tags.id,
+      },
+    );
+    return;
   }
 
-  if (attributes.startsWith("-")) {
-    return "Please stay positive!"; // Kisamius 2023
+  if (getAttributes(content).startsWith("-")) {
+    dispatcher.error("Please stay positive!", {
+      messageId: content.tags.id,
+    }); // Kisamius 2023
+    return;
   }
 
   const timeMillis = parseInt(things.time) * 60_000;
 
   setTimeout(
     () =>
-      sendChatAnnouncement(
+      dispatcher.announce(
         `The timer for "${
           things.message || DEFAULT_REMINDER_MESSAGE
         }" ran out!`,
@@ -39,5 +57,8 @@ export function setReminder(attributes: string): string {
     timeMillis,
   );
 
-  return `Setting a reminder for "${things.message}" in ${things.time} minutes!`;
+  dispatcher.say(
+    `Setting a reminder for "${things.message}" in ${things.time} minutes!`,
+  );
+  return;
 }

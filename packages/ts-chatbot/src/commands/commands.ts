@@ -1,7 +1,7 @@
 import { makeACupOfCoffee } from "./coffee.js";
 import { startTimer, clearTimer } from "../services/websocket.js";
 import { readCurrentFont, readCurrentTheme } from "./vscode.js";
-import { setReminder } from "./reminder.js";
+import { reminder } from "./reminder.js";
 import { hasPermission } from "./utils/hasPermission.js";
 import { type PrivateMessage } from "ts-twitch-irc";
 import { alias } from "./alias.js";
@@ -86,8 +86,7 @@ export const commands: Commands = {
   },
   "!reminder": {
     help: "Sets a reminder. Usage: !reminder [time in minutes] A thing to be reminded about",
-    action: (dispatcher, content) =>
-      dispatcher.reply(content.tags.id, setReminder(getAttributes(content))),
+    action: reminder,
     permission: "mod",
   },
   "!setup": {
