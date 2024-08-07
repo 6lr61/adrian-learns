@@ -1,6 +1,10 @@
 import { UserID } from "../../types/twitch/user.js";
 import { BaseCrud } from "../BaseCrud.js";
-import { Helix, type QueryParameters } from "../Helix.js";
+import { type QueryParameters } from "../Helix.js";
+
+interface Result {
+  data: Data[];
+}
 
 interface Data {
   id: string;
@@ -16,19 +20,27 @@ interface Data {
 }
 
 export class Users extends BaseCrud {
-  async get(params: { id: UserID | UserID[] }): Promise<Data[]>;
-  async get(params: { login: string | string[] }): Promise<Data[]>;
-  async get(params: QueryParameters): Promise<Data[]> {
-    return await this.helix.get<Data>("users", params);
+  async get(
+    params: { id: UserID | UserID[] },
+    controller?: AbortController,
+  ): Promise<Data[]>;
+  async get(
+    params: { login: string | string[] },
+    controller?: AbortController,
+  ): Promise<Data[]>;
+  async get(
+    params: QueryParameters,
+    controller?: AbortController,
+  ): Promise<Data[]> {
+    return (await this.helix.get<Result>("users", params, controller)).data;
   }
 
-  async put(params: { description: string }): Promise<Data[]> {
-    const scope = "user:edit";
+  async put(
+    params: { description: string },
+    controller?: AbortController,
+  ): Promise<Data[]> {
+    this.helix.checkScope("user:edit");
 
-    if (!this.helix.hasScope(scope)) {
-      throw new Error(`Token missing scope: ${scope}`);
-    }
-
-    return await this.helix.put<Data>("users", params);
+    return (await this.helix.put<Result>("users", params, controller)).data;
   }
 }
