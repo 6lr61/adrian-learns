@@ -1,5 +1,4 @@
 import { WebSocket } from "ws";
-import { sendChatAnnouncement } from "./helix.js";
 import { getToken } from "./auth.js";
 import type { Dispatch } from "./services/Dispatch.js";
 
@@ -159,6 +158,7 @@ export function wsEventsubConnect(dispatcher: Dispatch) {
           );
           break;
         case "channel.subscribe":
+          /*
           if (
             "is_gift" in message.payload.event &&
             message.payload.event.is_gift
@@ -173,8 +173,10 @@ export function wsEventsubConnect(dispatcher: Dispatch) {
               "blue",
             );
           }
+            */
           break;
         case "channel.subscription.gift":
+          /*
           if ("cumulative_total" in message.payload.event) {
             const gifter = message.payload.event.is_anonymous
               ? "Anonymous"
@@ -196,6 +198,7 @@ export function wsEventsubConnect(dispatcher: Dispatch) {
               "blue",
             );
           }
+            */
           break;
         case "channel.channel_points_custom_reward_redemption.add":
           if ("reward" in message.payload.event) {
