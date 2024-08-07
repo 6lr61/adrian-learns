@@ -1,4 +1,4 @@
-import type { Dispatch } from "../services/dispatch.js";
+import type { Dispatch } from "../services/Dispatch.js";
 import { botStorage } from "../botStorage.js";
 import type { PrivateMessage } from "ts-twitch-irc";
 import { getAttributes } from "./commands.js";

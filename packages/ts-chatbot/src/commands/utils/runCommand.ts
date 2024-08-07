@@ -2,8 +2,9 @@ import { coolingDownUntil, setCooldown } from "./cooldown.js";
 import { commands, type CommandDeclaration } from "../commands.js";
 import { type PrivateMessage } from "ts-twitch-irc";
 import { getAlias } from "../alias.js";
-import type { Dispatch } from "../../services/dispatch.js";
+import type { Dispatch } from "../../services/Dispatch.js";
 import { hasPermission } from "./hasPermission.js";
+import type { Helix } from "ts-twitch-helix";
 
 function formatTimeUntil(endingTime: Date) {
   const timeLeft = new Date(endingTime.valueOf() - Date.now());
@@ -17,6 +18,7 @@ function formatTimeUntil(endingTime: Date) {
 
 export function runCommand(
   dispatcher: Dispatch,
+  helix: Helix,
   messageContent: PrivateMessage,
 ): void {
   const message = messageContent.message.trim();
@@ -69,7 +71,7 @@ export function runCommand(
       }
     }
 
-    void command.action(dispatcher, messageContent);
+    void command.action(dispatcher, messageContent, helix);
 
     if (command.cooldown) {
       setCooldown(

@@ -1,9 +1,3 @@
-import {
-  getFollowAge,
-  getUptime,
-  sendShoutout,
-  timeoutUser,
-} from "../helix.js";
 import { makeACupOfCoffee } from "./coffee.js";
 import { startTimer, clearTimer } from "../services/websocket.js";
 import { readCurrentFont, readCurrentTheme } from "./vscode.js";
@@ -12,7 +6,12 @@ import { hasPermission } from "./utils/hasPermission.js";
 import { type PrivateMessage } from "ts-twitch-irc";
 import { alias } from "./alias.js";
 import { randomInt } from "node:crypto";
-import type { Dispatch } from "../services/dispatch.js";
+import type { Dispatch } from "../services/Dispatch.js";
+import type { Helix } from "ts-twitch-helix";
+import { shoutout } from "./shoutout.js";
+import { uptime } from "./uptime.js";
+import { followage } from "./followage.js";
+import { vanish } from "./vanish.js";
 
 export type Commands = Record<string, CommandDeclaration>;
 
@@ -26,15 +25,17 @@ export interface CommandDeclaration {
   readonly action: (
     dispatcher: Dispatch,
     content: PrivateMessage,
+    helix: Helix,
   ) => void | Promise<void>;
 }
 
-export function findNames(input: string): string[] | undefined {
-  const matches = input
-    // Try to match display names as well as Chinese, Japanese and Korean localized ones
-    .match(
-      /(?<= *@?)[\w]+|[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\u3131-\uD79D]+/g,
-    );
+export function findNames(
+  messageContent: PrivateMessage,
+): string[] | undefined {
+  // Try to match display names as well as Chinese, Japanese and Korean localized ones
+  const matches = messageContent.message.match(
+    /(?<= *@?)[\w]+|[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\u3131-\uD79D]+/g,
+  );
 
   if (matches) {
     return matches;
@@ -118,7 +119,7 @@ export const commands: Commands = {
   },
   "!followage": {
     help: "Responds with the number of days someone has been following. Usage: !followage [username]",
-    action: getFollowAge,
+    action: followage,
   },
   "!hello": {
     help: "Replies to a greeting",
@@ -178,7 +179,7 @@ export const commands: Commands = {
   "!hug": {
     help: "Gives chat a hug or let's you hug someone else. Usage: !hug [username]",
     action: (dispatcher, content) => {
-      const person = findNames(getAttributes(content))?.[0];
+      const person = findNames(content)?.at(0);
       const name = getName(content);
 
       dispatcher.say(
@@ -208,16 +209,22 @@ export const commands: Commands = {
   },
   "!vanish": {
     help: "Timeouts the user for 1 second to clear their chat history",
-    action: (_, content) => void timeoutUser(content.tags.user_id),
+    action: vanish,
     cooldown: { scope: "user", periodSeconds: 30 },
   },
   "!uptime": {
     help: "Stream uptime",
-    action: getUptime,
+    action: uptime,
   },
   "!shoutout": {
     help: "Shoutout a Twitch user. Usage: !shoutout <username>",
-    action: sendShoutout,
+    action: shoutout,
+    permission: "mod",
+  },
+  "!announce": {
+    help: "Make an announcement in chat. Usage: !announce <message>",
+    action: (dispatcher, content) =>
+      dispatcher.announce(getAttributes(content)),
     permission: "mod",
   },
 };
