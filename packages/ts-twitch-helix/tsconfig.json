@@ -8,6 +8,8 @@
     "skipLibCheck": true,
     "outDir": "dist",
     "noEmitOnError": true,
-    "sourceMap": true
-  }, "include": ["lib/"]
+    "sourceMap": true,
+    "declaration": true
+  },
+  "include": ["lib/"]
 }
