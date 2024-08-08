@@ -1,0 +1,13 @@
+{
+  "display": "Common config",
+
+  "compilerOptions": {
+    "strict": true,
+    "incremental": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUncheckedIndexedAccess": true
+  },
+  "exclude": ["node_modules"]
+}

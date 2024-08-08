@@ -1,0 +1,12 @@
+{
+  "display": "Electron",
+  "extends": "../../tsconfig.json",
+  "exclude": ["../webview"],
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "outDir": "../../dist",
+    "sourceMap": true
+  },
+  "moduleResolution": "NodeNext"
+}

@@ -1,0 +1,11 @@
+{
+  "display": "Front end scripts",
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "target": "es2015",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "outDir": "../../static"
+  }
+}

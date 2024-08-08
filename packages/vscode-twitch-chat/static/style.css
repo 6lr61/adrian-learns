@@ -1,0 +1,292 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+}
+
+#chat-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow-y: auto;
+}
+
+#chat-view {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: visible;
+  flex-grow: 1;
+}
+
+.message {
+  display: flex;
+  flex-direction: row;
+  margin: 0 0.3rem 0.3rem 0.3rem;
+}
+
+.message-container {
+  flex: 1;
+  overflow: hidden;
+  border-radius: 0.3rem;
+}
+
+.message .profile-picture {
+  height: 58px;
+  aspect-ratio: 1;
+  margin-right: 0.3rem;
+  border-radius: 10px;
+}
+
+.first-message .profile-picture,
+.first-message .message-container {
+  font-weight: bold;
+  margin: 1rem 0.3rem;
+  box-shadow: 0px 0px 12px 6px
+    var(--first-message, var(--vscode-list-focusHighlightForeground));
+}
+
+.first-message .message-container .message-header {
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+.first-message .message-container .message-body {
+  background-color: var(--vscode-list-activeSelectionBackground);
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+.highlighted .profile-picture,
+.highlighted .message-container {
+  font-weight: bold;
+  border-color: var(--highlight, var(--vscode-list-focusHighlightForeground));
+  border-width: 2px;
+  border-style: solid;
+}
+
+.highlighted .message-container .message-header {
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+.highlighted .message-container .message-body {
+  background-color: var(--vscode-list-activeSelectionBackground);
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+.message-header {
+  height: 1.5rem;
+  display: flex;
+  font-weight: bold;
+  padding: 0 0.5rem;
+  background-color: rgba(0, 0, 0, 0.25);
+  align-items: center;
+  border-radius: 0.3rem 0.3rem 0rem 0rem;
+}
+
+.message-reply-header {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.3rem;
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.message-header img {
+  flex-grow: 0;
+  height: 0.8rem;
+  margin-right: 0.3rem;
+}
+
+.message-username-container {
+  height: 100%;
+  flex-grow: 1;
+  line-height: 1.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.message-username-container p {
+  display: inline;
+}
+
+.message-username-container .displayname {
+  font-weight: bold;
+}
+
+.message-username-container .username {
+  font-weight: normal;
+  margin-left: 0.3rem;
+}
+
+.message-username-container .pronoun {
+  font-weight: normal;
+  margin-left: 0.3rem;
+}
+
+.message-timer {
+  color: var(--vscode-disabledForeground);
+  flex-grow: 0;
+  font-size: small;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+.message-body {
+  line-height: 1.1rem;
+  color: var(--vscode-sideBar-foreground);
+  word-break: break-word;
+  padding: 0.5rem;
+  background-color: var(--vscode-sideBar-border);
+}
+
+.message-reply-body {
+  font-size: 0.7rem;
+  font-style: italic;
+  line-height: 0.9rem;
+  word-break: break-word;
+  padding: 0.2rem 0.5rem 0.3rem 0.5rem;
+  background-color: rgba(0, 0, 0, 0.25);
+  /* color: var(--vscode-list-activeSelectionForeground); */
+}
+
+.message-body img {
+  margin: -0.5rem 0;
+  position: relative;
+  vertical-align: middle;
+}
+
+.mention {
+  color: var(--vscode-sideBar-background);
+  background-color: var(--vscode-sideBar-foreground);
+  font-weight: bold;
+  padding: 2px;
+  border-radius: 2px;
+}
+
+.cursive {
+  font-style: italic;
+}
+
+.cursive img {
+  transform: skew(-15deg);
+}
+
+.message-body .flipx {
+  transform: scaleX(-1);
+}
+
+.message-body .flipy {
+  transform: scaleY(-1);
+}
+
+.message-body .wide {
+  height: 28px;
+  width: 114px;
+}
+
+.message-body .rotate {
+  transform: rotate(90deg);
+}
+
+.message-body .rotateLeft {
+  transform: rotate(-90deg);
+}
+
+.message-body .zerowidth {
+  margin-left: -0.3rem;
+}
+
+.message-body .cursed {
+  filter: brightness(0.75) contrast(2.5) grayscale(1);
+}
+
+.raid-notification {
+  margin: 1rem 0.3rem;
+  aspect-ratio: 1/1;
+  background-color: var(--vscode-list-activeSelectionBackground);
+  background-size: 100%;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 3px solid var(--vscode-list-focusHighlightForeground);
+  box-shadow: 0 0 0.5rem 0.1rem var(--vscode-list-focusHighlightForeground)
+      inset,
+    0 0 1rem 0.2rem var(--vscode-list-focusHighlightForeground);
+  display: flex;
+  align-items: end;
+  justify-content: center;
+}
+
+.raid-info {
+  background-color: color-mix(
+    in srgb,
+    var(--vscode-list-activeSelectionBackground) 75%,
+    transparent
+  );
+  padding: 0.5rem;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+}
+
+.raider-name {
+  padding: 0.5rem;
+  font-weight: bold;
+  font-size: 1.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.raider-amount {
+  padding: 0.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+@keyframes spinning {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+img[class="rotate rotate rotate rotate"] {
+  animation-name: spinning;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  /* linear | ease | ease-in | ease-out | ease-in-out */
+  animation-timing-function: linear;
+}
+
+@keyframes spinningLeft {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+img[class="rotateLeft rotateLeft rotateLeft rotateLeft"] {
+  animation-name: spinningLeft;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  /* linear | ease | ease-in | ease-out | ease-in-out */
+  animation-timing-function: linear;
+}

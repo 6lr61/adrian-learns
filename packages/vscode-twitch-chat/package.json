@@ -1,0 +1,92 @@
+{
+  "name": "vscode-twitch-chat",
+  "description": "Twitch Chat for VSCode",
+  "version": "0.13.0",
+  "publisher": "adrian_learns",
+  "private": "true",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/6lr61/adrian-learns.git"
+  },
+  "license": "BSD-3-Clause",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "type": "commonjs",
+  "contributes": {
+    "commands": [
+      {
+        "command": "twitchChat.login",
+        "title": "Login to Twitch in an external browser",
+        "category": "Twitch Chat"
+      },
+      {
+        "command": "twitchChat.start",
+        "title": "Open a new Twitch Chat WebView",
+        "category": "Twitch Chat"
+      }
+    ],
+    "configuration": {
+      "title": "Twitch Chat",
+      "properties": {
+        "twitchChat.authentication.clientId": {
+          "type": "string",
+          "markdownDescription": "Leave empty or enter your own app's [registered](https://dev.twitch.tv/docs/authentication/register-app/) client ID."
+        },
+        "twitchChat.channelName": {
+          "type": "string",
+          "description": "The name of the channel to join. Leave empty to join the token owner's channel."
+        },
+        "twitchChat.emotes.bttv": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show BetterTTV emotes and badges."
+        },
+        "twitchChat.emotes.sevenTv": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show 7TV emotes."
+        },
+        "twitchChat.redirect.portNumber": {
+          "type": "string",
+          "default": "6502",
+          "description": "Sets the port number for the OAuth redirect URI.",
+          "enum": [
+            "6502",
+            "8086"
+          ],
+          "enumDescriptions": [
+            "Sets the redirect URI to http://localhost:6502",
+            "Sets the redirect URI to http://localhost:8086"
+          ]
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm install && npm run compile",
+    "compile": "tsc -b ./src/webview ./src/extension",
+    "watch": "tsc -b ./src/extension ./src/webview -w",
+    "prebuild": "npx rimraf dist",
+    "build": "vsce package",
+    "clean": "npx rimraf dist"
+  },
+  "dependencies": {
+    "ts-twitch-irc": "^0.2.0",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^2.22.0",
+    "@types/node": "^20.8.2",
+    "@types/vscode": "^1.73.0",
+    "@types/vscode-webview": "^1.57.0",
+    "@types/ws": "^8.5.6",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.9.1",
+    "eslint": "^8.56.0",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.2.2"
+  }
+}

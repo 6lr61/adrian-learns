@@ -9,6 +9,9 @@
     },
     {
       "path": "packages/ts-chatbot"
+    },
+    {
+      "path": "packages/vscode-twitch-chat"
     }
   ]
 }

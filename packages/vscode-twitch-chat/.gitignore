@@ -1,0 +1,10 @@
+dist/*
+dist/twitch/*
+node_modules/*
+static/*.js
+*.js
+*.tsbuildinfo
+
+tokens.json
+secrets.json
+vscode-twitch-chat-*.vsix
