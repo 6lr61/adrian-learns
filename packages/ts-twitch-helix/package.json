@@ -5,6 +5,9 @@
   "description": "",
   "main": "dist/index.js",
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "prestart": "tsc",
     "start": "node dist",

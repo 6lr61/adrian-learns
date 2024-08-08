@@ -10,9 +10,11 @@
   "private": "true",
   "scripts": {
     "compile": "tsc",
-    "prestart": "tsc",
     "start": "node --env-file=config.env dist/bot.js"
   },
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@types/node": "^20.8.2",
     "@types/ws": "^8.5.5",
