@@ -1,20 +1,29 @@
 {
   "name": "vscode-twitch-chat",
   "description": "Twitch Chat for VSCode",
-  "version": "0.13.0",
-  "publisher": "adrian_learns",
+  "version": "0.13.2",
+  "publisher": "adrian-learns",
   "private": "true",
+  "license": "GPL-3.0-or-later",
   "repository": {
     "type": "git",
-    "url": "https://github.com/6lr61/adrian-learns.git"
+    "url": "git+https://github.com/6lr61/vscode-twitch-chat.git"
   },
-  "license": "BSD-3-Clause",
   "engines": {
     "vscode": "^1.74.0"
   },
   "activationEvents": [],
   "main": "./dist/extension.js",
+  "files": [
+    "dist/extension.js",
+    "static/*.js",
+    "static/*.css",
+    "LICENSE.txt"
+  ],
   "type": "commonjs",
+  "vsce": {
+    "dependencies": false
+  },
   "contributes": {
     "commands": [
       {
@@ -66,27 +75,33 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm install && npm run compile",
+    "vscode:prepublish": "npm install && tsc -b ./src/webview && node esbuild.cjs",
     "compile": "tsc -b ./src/webview ./src/extension",
     "watch": "tsc -b ./src/extension ./src/webview -w",
-    "prebuild": "npx rimraf dist",
+    "prebuild": "npx rimraf dist && npx rimraf static/*.js static/*.tsbuildinfo",
     "build": "vsce package",
-    "clean": "npx rimraf dist"
+    "clean": "npx rimraf dist && npx rimraf static/*.js static/*.tsbuildinfo"
   },
   "dependencies": {
     "ts-twitch-irc": "^0.2.0",
     "ws": "^8.14.2"
   },
   "devDependencies": {
-    "@vscode/vsce": "^2.22.0",
     "@types/node": "^20.8.2",
     "@types/vscode": "^1.73.0",
     "@types/vscode-webview": "^1.57.0",
     "@types/ws": "^8.5.6",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "@typescript-eslint/parser": "^6.9.1",
+    "@vscode/vsce": "^2.22.0",
+    "esbuild": "^0.23.0",
     "eslint": "^8.56.0",
     "rimraf": "^5.0.5",
     "typescript": "^5.2.2"
-  }
+  },
+  "author": "Adrian Learns",
+  "bugs": {
+    "url": "https://github.com/6lr61/vscode-twitch-chat/issues"
+  },
+  "homepage": "https://github.com/6lr61/vscode-twitch-chat#readme"
 }
