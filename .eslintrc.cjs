@@ -27,6 +27,12 @@ module.exports = {
         allowNullableObject: true,
       },
     ],
+    "@typescript-eslint/prefer-literal-enum-member": [
+      "error",
+      {
+        allowBitwiseExpressions: true,
+      },
+    ],
   },
   root: true,
 };
