@@ -6,15 +6,15 @@ export function createServer(
   callback: (
     accessToken: string,
     scope: string,
-    tokenType: string
+    tokenType: string,
   ) => Promise<void>,
-  redirectPort: string
+  redirectPort: string,
 ) {
   const requestListener = function (
     request: http.IncomingMessage,
-    response: http.ServerResponse
+    response: http.ServerResponse,
   ) {
-    if (!request.url) {
+    if (request.url === undefined) {
       response.setHeader("Content-Type", "text/plain");
       response.writeHead(500);
       response.end("The wheel is spinning, but the hamster is dead.");
@@ -26,8 +26,8 @@ export function createServer(
     const scope = url.searchParams.get("scope");
     const tokenType = url.searchParams.get("token_type");
 
-    if (accessToken && scope && tokenType) {
-      callback(accessToken, scope, tokenType);
+    if (accessToken !== null && scope !== null && tokenType !== null) {
+      void callback(accessToken, scope, tokenType);
       console.debug("Forwarding tokens");
     }
 
@@ -44,14 +44,14 @@ export function createServer(
             }
           </script>
         </body>
-      </html>`
+      </html>`,
     );
   };
 
   const server = http.createServer(requestListener);
   server.listen(Number.parseInt(redirectPort), REDIRECT_HOST, () => {
     console.debug(
-      `WebServer is running on http://${REDIRECT_HOST}:${redirectPort}`
+      `WebServer is running on http://${REDIRECT_HOST}:${redirectPort}`,
     );
   });
 }

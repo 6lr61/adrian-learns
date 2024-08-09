@@ -20,7 +20,7 @@ interface EmoteEntry {
 
 export class Emotes {
   private emotes: Map<string, EmoteEntry>;
-  private static _instance: Emotes;
+  private static _instance: Emotes | undefined;
 
   private constructor() {
     this.emotes = new Map<string, EmoteEntry>();
@@ -86,7 +86,7 @@ export class Emotes {
           console.error(
             "BetterTTV.Emotes.init: Bad HTTP response:",
             response.status,
-            response.statusText
+            response.statusText,
           );
           return;
         }
@@ -95,7 +95,7 @@ export class Emotes {
       } catch (error) {
         console.error(
           "BetterTTV.Emotes.init: Threw while fetching data",
-          error
+          error,
         );
       }
     }
@@ -108,7 +108,7 @@ export class Emotes {
     }
 
     const userData = await getFrom<BTTVUserResponse>(
-      `/cached/users/twitch/${userId}`
+      `/cached/users/twitch/${userId}`,
     );
     for (const emote of userData?.channelEmotes || []) {
       this.add(emote);
@@ -139,11 +139,15 @@ export class Emotes {
         let position = message.indexOf(marker);
 
         while (position !== -1) {
+          if (emote === undefined) {
+            continue;
+          }
+
           emotes[
             emoteName + position + "_" + (position + emoteName.length - 1)
           ] = {
-            urlSmall: emote?.urlSmall || "",
-            urlBig: emote?.urlBig || "",
+            urlSmall: emote.urlSmall,
+            urlBig: emote.urlBig,
             start: position,
             stop: position + emoteName.length - 1,
             modifier: BTTV_MODIFIER.has(emoteName) ? emoteName : "",

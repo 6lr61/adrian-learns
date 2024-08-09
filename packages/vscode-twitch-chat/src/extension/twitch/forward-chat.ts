@@ -18,9 +18,9 @@ import { Pronouns } from "../pronouns.js";
 import { getProfilePicture } from "./profile-pictures.js";
 import type { Token } from "../auth/token.js";
 
-export function forwardCommand(
+export async function forwardCommand(
   panel: WebviewPanel,
-  command: ClearChatCommand | ClearMessageCommand
+  command: ClearChatCommand | ClearMessageCommand,
 ) {
   console.debug("Foward command:", command);
 
@@ -30,35 +30,46 @@ export function forwardCommand(
       command: "clear",
       userId: command.tags.target_user_id,
     };
-    panel.webview.postMessage(clearCommand);
+
+    await panel.webview.postMessage(clearCommand);
   } else if (command.clear_type === "message") {
     const deleteCommand: DeleteCommand = {
       type: "command",
       command: "delete",
       messageId: command.tags.target_msg_id,
     };
-    panel.webview.postMessage(deleteCommand);
+
+    await panel.webview.postMessage(deleteCommand);
   }
 }
 
 function unEscape(match: string): string {
-  const replace: Record<string, string> = {
-    "\\\\": "\\",
-    "\\s": " ",
-    "\\:": ";",
-    "\\": "",
-  };
-  return replace[match] || "";
+  switch (match) {
+    case "\\\\":
+      return "\\";
+    case "\\s":
+      return " ";
+    case "\\:":
+      return ";";
+    case "\\":
+      return "";
+    default:
+      return "";
+  }
 }
 
 export async function forwardMessage(
   panel: WebviewPanel,
   clientId: string,
   token: Token,
-  message: PrivateMessage | AnnouncementNotice
+  message: PrivateMessage | AnnouncementNotice,
 ) {
-  // eslint-disable-next-line
-  const makeCursive = /^\x01ACTION/.test(message.message || "");
+  if (message.message === undefined) {
+    return;
+  }
+
+  // eslint-disable-next-line no-control-regex
+  const makeCursive = /^\u0001ACTION/.test(message.message);
 
   const badges = message.tags?.badges
     ?.split(",")
@@ -72,23 +83,21 @@ export async function forwardMessage(
 
   const bttvBadgeUrl = BetterTTV.UserBadges.instance.get(username);
 
-  if (bttvBadgeUrl) {
+  if (bttvBadgeUrl !== undefined) {
     badges.push(bttvBadgeUrl);
   }
 
   const profilePictureUrl = await getProfilePicture(username, clientId, token);
-
-  let parentMessage = {};
-  if ("reply_parent_msg_body" in message.tags) {
-    parentMessage = {
+  const parentMessage = {
+    ...("reply_parent_msg_body" in message.tags && {
       replyingToDisplayname: message.tags.reply_parent_display_name,
       replyingToUsername: message.tags.reply_parent_user_login,
       replyingToMessage: message.tags.reply_parent_msg_body?.replace(
         /\\\\|\\:|\\s|\\/g,
-        unEscape
+        unEscape,
       ),
-    };
-  }
+    }),
+  };
 
   const webviewMessage: WebViewMessage = {
     badges,
@@ -99,54 +108,52 @@ export async function forwardMessage(
     type: "message",
     color: message.tags.color,
     emotes: makeEmoteList(message),
-    profilePicture: profilePictureUrl || undefined,
-    message:
-      (makeCursive
-        ? // eslint-disable-next-line
-          message.message?.replace(/\x01ACTION |\x01/g, "")
-        : message.message) || "",
+    profilePicture: profilePictureUrl,
+    message: makeCursive
+      ? // eslint-disable-next-line no-control-regex
+        message.message?.replace(/\u0001ACTION |\u0001/g, "")
+      : message.message,
     messageId: message.tags.id as string,
     cursive: makeCursive,
     firstMessage:
-      "notice_type" in message ||
-      message.tags.first_msg === "1" ||
-      ("custom_reward_id" in message.tags && !!message.tags.custom_reward_id),
+      message.type === "privateMessage" && message.tags.first_msg === "1",
     highlighted:
-      "notice_type" in message || message.tags.msg_id === "highlighted-message",
+      message.type === "userNotice" ||
+      message.tags.msg_id === "highlighted-message",
     hightlightColor:
-      "notice_type" in message ? message.tags.msg_param_color : "PRIMARY",
+      message.type === "userNotice" ? message.tags.msg_param_color : "PRIMARY",
     ...parentMessage,
   };
 
   console.log(webviewMessage);
 
-  panel.webview.postMessage(webviewMessage);
+  await panel.webview.postMessage(webviewMessage);
 }
 
 export async function forwardNotice(
   panel: WebviewPanel,
   clientId: string,
   token: Token,
-  notice: UserNotice
+  notice: UserNotice,
 ) {
   switch (notice.notice_type) {
     case "raid": {
       const raidNotice: WebViewRaidNotice = {
         type: "notice",
         notice_type: "raid",
-        raiderName: notice.tags.msg_param_displayName || "Someone",
+        raiderName: notice.tags.msg_param_displayName,
         raiderPicture: notice.tags.msg_param_profileImageURL?.replace(
           "%s",
-          "600x600"
+          "600x600",
         ),
         numberOfRaiders: Number(notice.tags.msg_param_viewerCount),
       };
 
-      panel.webview.postMessage(raidNotice);
+      await panel.webview.postMessage(raidNotice);
       break;
     }
     case "announcement": {
-      forwardMessage(panel, clientId, token, notice);
+      await forwardMessage(panel, clientId, token, notice);
       break;
     }
   }

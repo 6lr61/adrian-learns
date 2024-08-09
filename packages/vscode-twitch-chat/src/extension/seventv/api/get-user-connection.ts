@@ -14,7 +14,7 @@ interface Response {
 
 export async function getUserConnection(
   connectionId: string,
-  connectionPlatform = "twitch"
+  connectionPlatform = "twitch",
 ): Promise<EmoteSet | undefined> {
   const url = `https://7tv.io/v3/users/${connectionPlatform}/${connectionId}`;
 
@@ -23,14 +23,14 @@ export async function getUserConnection(
 
     if (!response.ok) {
       throw new Error(
-        `7TV: Bad response: ${response.status}: ${response.statusText}`
+        `7TV: Bad response: ${response.status}: ${response.statusText}`,
       );
     }
 
     const data = (await response.json()) as Response;
     console.debug("7TV: Got User Connect Response:", data);
 
-    if (!data.emote_set?.id) {
+    if (data.emote_set?.id === undefined) {
       console.error("7TV: No emote ID in the user connection response?");
       return;
     }

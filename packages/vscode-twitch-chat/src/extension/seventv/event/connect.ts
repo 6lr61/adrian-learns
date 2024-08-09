@@ -115,9 +115,9 @@ enum OpCode {
 }
 
 export async function connect(emoteSetId: string | null): Promise<void> {
-  if (!emoteSetId) {
+  if (emoteSetId === null) {
     console.error(
-      "7TV: Failed to acquire an emote set ID, can't subscribe to updates"
+      "7TV: Failed to acquire an emote set ID, can't subscribe to updates",
     );
     return;
   }
@@ -150,7 +150,7 @@ export async function connect(emoteSetId: string | null): Promise<void> {
         "7TV: WebSocket: Connection closed with code:",
         code,
         "and reason:",
-        reason.toString()
+        reason.toString(),
       );
       // Might need to use RESUME sometimes?
       clearTimeout(heartbetTimer);
@@ -162,7 +162,7 @@ export async function connect(emoteSetId: string | null): Promise<void> {
         console.debug("7TV WebSocket:", message.toString());
 
         const webSocketMessage = JSON.parse(
-          message.toString()
+          message.toString(),
         ) as WebSocketMessage;
 
         switch (webSocketMessage.op) {
@@ -175,7 +175,7 @@ export async function connect(emoteSetId: string | null): Promise<void> {
             break;
           }
           case OpCode.DISPATCH: {
-            handleDispatchEvent(webSocketMessage);
+            void handleDispatchEvent(webSocketMessage);
             break;
           }
           case OpCode.HEARTBEAT: {
@@ -205,7 +205,7 @@ export async function connect(emoteSetId: string | null): Promise<void> {
       } catch (error) {
         console.error(
           "7TV WebSocket: Failed to handle websocket message:",
-          error
+          error,
         );
       }
     });
@@ -228,7 +228,7 @@ export async function connect(emoteSetId: string | null): Promise<void> {
         console.log(
           "SevenTV WebSocket: Reconnecting in 5 minutes, got code:",
           code,
-          reason
+          reason,
         );
         setTimeout(() => reconnect(), 5 * 60_000);
         break;
@@ -237,7 +237,7 @@ export async function connect(emoteSetId: string | null): Promise<void> {
         console.error(
           "SevenTV WebSocket: Disconnecting, got code:",
           code,
-          reason
+          reason,
         );
       }
     }

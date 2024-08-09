@@ -32,7 +32,7 @@ export class Token {
   }
 
   private static async validateToken(
-    token: string
+    token: string,
   ): Promise<ValidTokenResponse | undefined> {
     try {
       // TODO: We might need to retry this, because this endpoint
@@ -45,7 +45,7 @@ export class Token {
 
       if (!response.ok) {
         throw new Error(
-          `Bad HTTP response: ${response.status}, ${response.statusText}`
+          `Bad HTTP response: ${response.status}, ${response.statusText}`,
         );
       }
 
@@ -73,7 +73,7 @@ export class Token {
   private async storeToken(accessToken: string, scope: string): Promise<void> {
     // TODO: Figure out a way to restart the login process instead of crashing
     const tokenDetails = (await Token.validateToken(
-      accessToken
+      accessToken,
     )) as ValidTokenResponse; // If it throws this is never evaluated
 
     const token: Chat.Token = {
@@ -83,13 +83,13 @@ export class Token {
       expires: Date.now() + Number(tokenDetails.expires_in) * 1000 - 60_000,
     };
 
-    this.context.secrets.store("token", JSON.stringify(token));
+    await this.context.secrets.store("token", JSON.stringify(token));
   }
 
   async borrowToken(): Promise<Chat.Token | undefined> {
     const data = await this.context.secrets.get("token");
 
-    if (!data) {
+    if (data === undefined) {
       console.error("Token.borrowToken: Failed to get token");
       return;
     }
@@ -108,7 +108,7 @@ export class Token {
     try {
       const data = await this.context.secrets.get("token");
 
-      if (!data) {
+      if (data === undefined) {
         throw new Error("Secret Storage entry is empty?");
       }
 
@@ -131,7 +131,7 @@ export class Token {
       console.debug("Token.getToken: Waiting for new token");
 
       const wait = await new Promise((resolve) =>
-        this.context.secrets.onDidChange(async () => resolve(this.getToken()))
+        this.context.secrets.onDidChange(async () => resolve(this.getToken())),
       );
 
       return wait as Chat.Token | null;

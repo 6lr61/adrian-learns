@@ -15,7 +15,7 @@ interface UserEntry {
 }
 
 export class Pronouns {
-  private static _instance: Pronouns;
+  private static _instance: Pronouns | undefined;
   private descriptors: Map<string, PronounDescription>;
   private users: Map<string, UserEntry | null>;
 

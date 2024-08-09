@@ -10,17 +10,17 @@ interface Emote {
 
 export class Emotes {
   private emotes: Map<string, Emote>;
-  private static singleton: Emotes;
+  private static _instance: Emotes | undefined;
 
   private constructor() {
     this.emotes = new Map<string, Emote>();
   }
 
   public static get instance(): Emotes {
-    if (!Emotes.singleton) {
-      Emotes.singleton = new Emotes();
+    if (!Emotes._instance) {
+      Emotes._instance = new Emotes();
     }
-    return Emotes.singleton;
+    return Emotes._instance;
   }
 
   public addEmotes(emotes: EmoteModel[]): void {
@@ -49,7 +49,7 @@ export class Emotes {
     ) {
       console.error(
         "SevenTV.Emotes.addEmote: Inappropriate or unlisted emote, not adding",
-        emote
+        emote,
       );
       return;
     }
@@ -93,6 +93,7 @@ export class Emotes {
     for (const word of words) {
       if (this.hasEmote(word)) {
         const emoteName = word;
+        const emote = this.getEmote(emoteName);
         const marker = "#".repeat(emoteName.length);
         const message = words
           .map((word) => (word === emoteName ? marker : word))
@@ -101,11 +102,15 @@ export class Emotes {
         let position = message.indexOf(marker);
 
         while (position !== -1) {
+          if (emote === undefined) {
+            continue;
+          }
+
           emotesList[
             emoteName + position + "_" + (position + emoteName.length - 1)
           ] = {
-            urlSmall: this.getEmote(emoteName)?.urlSmall || "",
-            urlBig: this.getEmote(emoteName)?.urlBig || "",
+            urlSmall: emote.urlSmall,
+            urlBig: emote.urlBig,
             start: position,
             stop: position + emoteName.length - 1,
             modifier: "",

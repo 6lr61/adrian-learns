@@ -2,7 +2,7 @@ const BTTV_API = "https://api.betterttv.net/3";
 
 export class UserBadges {
   private badges: Map<string, string>;
-  static _instance: UserBadges;
+  static _instance: UserBadges | undefined;
 
   private constructor() {
     this.badges = new Map<string, string>();

@@ -9,7 +9,7 @@ export interface WebViewMessage {
   color: string | undefined;
   profilePicture: string | undefined;
   message: string;
-  emotes: ChatEmote[] | [];
+  emotes: ChatEmote[];
   pronoun?: string;
   cursive: boolean;
   firstMessage: boolean;
@@ -29,7 +29,7 @@ export interface WebViewAnnouncementMessage {
   badges: string[] | undefined;
   color: string | undefined;
   message: string;
-  emotes: ChatEmote[] | [];
+  emotes: ChatEmote[];
   cursive: boolean;
   firstMessage: boolean;
   highlighted: boolean;

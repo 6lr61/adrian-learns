@@ -18,13 +18,13 @@ export type TwitchChannelID = TwitchUserID;
 
 export type TwitchChannelName = string;
 
-export type TwitchDisplayName = string | undefined;
+export type TwitchDisplayName = string;
 
 export type TwitchUserName = string;
 
 export type TwitchEmoteSet = string;
 
-export type TwitchEmotesList = string | undefined;
+export type TwitchEmotesList = string;
 
 /** UUID for the message */
 export type TwitchMessageID = string;

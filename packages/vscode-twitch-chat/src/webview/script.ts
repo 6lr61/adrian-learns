@@ -24,7 +24,7 @@ const modifierClassNames = {
 function displayTime(
   startTime: number,
   timerElement: HTMLElement,
-  messageElement: HTMLElement
+  messageElement: HTMLElement,
 ) {
   if (!document.body.contains(timerElement)) {
     console.error("displayTime: Element is gone!");
@@ -48,17 +48,13 @@ function displayTime(
 
   setTimeout(
     () => displayTime(startTime, timerElement, messageElement),
-    TIMEOUT_MILLIS
+    TIMEOUT_MILLIS,
   );
 }
 
 type ParsedTextNodes = Text | HTMLSpanElement;
 function parseText(text: string): ParsedTextNodes[] {
   const mentions = text.matchAll(new RegExp(`@?${USERNAME}`, "g"));
-
-  if (!mentions) {
-    return [document.createTextNode(text)];
-  }
 
   const nodes: ParsedTextNodes[] = [];
   let index = 0;
@@ -98,7 +94,7 @@ window.addEventListener("message", (event) => {
     switch (chatMessage.command) {
       case "clear": {
         const messageElements = document.querySelectorAll(
-          `[data-user-id="${chatMessage.userId}"]`
+          `[data-user-id="${chatMessage.userId}"]`,
         );
         for (const element of messageElements) {
           element.remove();
@@ -107,7 +103,7 @@ window.addEventListener("message", (event) => {
       }
       case "delete": {
         const message = document.querySelector(
-          `#uuid-${chatMessage.messageId}`
+          `#uuid-${chatMessage.messageId}`,
         );
 
         if (message) {
@@ -115,7 +111,7 @@ window.addEventListener("message", (event) => {
         } else {
           console.error(
             "WebView: Couldn't delete message with id:",
-            chatMessage.messageId
+            chatMessage.messageId,
           );
         }
         break;
@@ -147,7 +143,7 @@ window.addEventListener("message", (event) => {
       if (chatMessage.hightlightColor !== "PRIMARY") {
         messageElement.style.setProperty(
           "--first-message",
-          twitchColors[chatMessage.hightlightColor]
+          twitchColors[chatMessage.hightlightColor],
         );
       }
     }
@@ -158,26 +154,26 @@ window.addEventListener("message", (event) => {
       if (chatMessage.hightlightColor !== "PRIMARY") {
         messageElement.style.setProperty(
           "--highlight",
-          twitchColors[chatMessage.hightlightColor]
+          twitchColors[chatMessage.hightlightColor],
         );
       }
     }
 
     // Profile picture
-    const imageElement = chatMessage.profilePicture
-      ? document.createElement("img")
-      : document.createElement("div");
+    if (chatMessage.profilePicture !== undefined) {
+      const imageElement = document.createElement("img");
       imageElement.classList.add("profile-picture");
-    messageElement.append(imageElement);
-
-    if (chatMessage.profilePicture) {
       imageElement.setAttribute("src", chatMessage.profilePicture);
+      messageElement.append(imageElement);
     } else {
-      imageElement.style.backgroundColor = hexToRgba(
-        chatMessage.color || "#000000"
-      );
+      const placeholderElement = document.createElement("div");
+      placeholderElement.classList.add("profile-picture");
+      placeholderElement.style.backgroundColor =
+        chatMessage.color !== undefined
+          ? hexToRgba(chatMessage.color)
+          : hexToRgba("#000000");
+      messageElement.append(placeholderElement);
     }
-    // End of profile picture
 
     // Message container
     const messageContainerElement = document.createElement("div");
@@ -189,7 +185,7 @@ window.addEventListener("message", (event) => {
     messageContainerElement.append(headerElement);
     headerElement.className = "message-header";
 
-    if (chatMessage.color) {
+    if (chatMessage.color !== undefined) {
       headerElement.style.backgroundColor = hexToRgba(chatMessage.color);
     }
 
@@ -219,7 +215,7 @@ window.addEventListener("message", (event) => {
       usernameContainer.append(userName);
     }
 
-    if (chatMessage.pronoun) {
+    if (chatMessage.pronoun !== undefined) {
       const pronoun = document.createElement("span");
       pronoun.classList.add("pronoun");
       pronoun.textContent = `${chatMessage.pronoun}`;
@@ -234,7 +230,7 @@ window.addEventListener("message", (event) => {
     displayTime(Date.now(), timerElement, messageElement);
 
     // Reply parent message
-    if (chatMessage.replyingToMessage) {
+    if (chatMessage.replyingToMessage !== undefined) {
       // Header
       const replyParentHeader = document.createElement("div");
       messageContainerElement.append(replyParentHeader);
@@ -265,17 +261,18 @@ window.addEventListener("message", (event) => {
 
     const message = chatMessage.message;
     let start = 0;
+
     if ("replyingToMessage" in chatMessage) {
-      start = message.match(/^@\w+ /g)?.[0].length || 0;
+      start = message.indexOf(" "); // skip @username
     }
 
-    // If there's emotes, then we just set the text content  ¯\_ (ツ)_/¯
+    // If there's no emotes, then we just set the text content  ¯\_ (ツ)_/¯
     if (chatMessage.emotes.length === 0) {
       bodyElement.append(...parseText(message.slice(start)));
     } else if (
-      chatMessage.emotes[0] &&
-      chatMessage.emotes[0].start === 0 &&
-      chatMessage.emotes[0].stop === chatMessage.message.length - 1
+      chatMessage.emotes.length === 1 &&
+      chatMessage.emotes[0]?.start === 0 &&
+      chatMessage.emotes[0]?.stop === chatMessage.message.length - 1
     ) {
       const emoteImage = document.createElement("img");
       emoteImage.src = chatMessage.emotes[0].urlBig;
@@ -309,7 +306,7 @@ window.addEventListener("message", (event) => {
               "class",
               modifiers
                 .map((modifier) => modifierClassNames[modifier as BTTVModifer])
-                .join(" ")
+                .join(" "),
             );
 
             modifiers.length = 0;

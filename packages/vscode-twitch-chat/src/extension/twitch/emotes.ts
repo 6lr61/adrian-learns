@@ -3,11 +3,11 @@ import type { ChatEmote } from "../types";
 import type { AnnouncementNotice } from "ts-twitch-irc/dist/types/userNotice";
 
 export function makeTwitchEmoteList(
-  message: PrivateMessage | AnnouncementNotice
+  message: PrivateMessage | AnnouncementNotice,
 ): Record<string, ChatEmote> {
   const twitchEmotes: Record<string, ChatEmote> = {}; // Emote array
 
-  if (!message.tags.emotes || !message.message) {
+  if (message.tags.emotes === undefined || message.message === undefined) {
     return {};
   }
 
@@ -17,14 +17,14 @@ export function makeTwitchEmoteList(
   for (const entry of emotesTags) {
     const [id, positions] = entry.split(":");
 
-    if (!positions) {
+    if (positions === undefined) {
       continue;
     }
 
-    for (const position of positions?.split(",") || []) {
+    for (const position of positions.split(",")) {
       const [start, stop] = position.split("-");
 
-      if (!start || !stop) {
+      if (start === undefined || stop === undefined) {
         continue;
       }
 

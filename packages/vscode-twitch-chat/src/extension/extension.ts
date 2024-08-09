@@ -10,7 +10,6 @@ import {
 import { Emotes, connect as connectToSevenTv } from "./seventv/index.js";
 import { getEmoteSet } from "./seventv/api/get-emote-set.js";
 import { getUserConnection } from "./seventv/api/get-user-connection.js";
-
 import { createServer } from "./auth/create-server.js";
 import { Token } from "./auth/token.js";
 import { getUsers } from "./twitch/helix/get-users.js";
@@ -25,8 +24,9 @@ export function activate(context: vscode.ExtensionContext) {
   // This is the context from where we'd connect to Twitch
   const configuration = vscode.workspace.getConfiguration("twitchChat");
   const clientId =
-    configuration.get<{ clientId: string }>("authentication")?.clientId ||
-    CLIENT_ID;
+    configuration.get<{ clientId: string }>("authentication", {
+      clientId: CLIENT_ID,
+    }).clientId || CLIENT_ID;
   const redirect = configuration.get<{ portNumber: string }>("redirect");
 
   if (typeof redirect?.portNumber !== "string") {
@@ -44,15 +44,15 @@ export function activate(context: vscode.ExtensionContext) {
       url.searchParams.set("client_id", clientId);
       url.searchParams.set(
         "redirect_uri",
-        `http://localhost:${redirect.portNumber}`
+        `http://localhost:${redirect.portNumber}`,
       );
       url.searchParams.set("scope", scopes.join(" "));
       // TODO: Should be an option
       url.searchParams.set("force_verify", "true");
       url.searchParams.set("response_type", "token");
 
-      vscode.env.openExternal(vscode.Uri.parse(url.toString()));
-    })
+      void vscode.env.openExternal(vscode.Uri.parse(url.toString()));
+    }),
   );
 
   const startChat = async () => {
@@ -66,15 +66,15 @@ export function activate(context: vscode.ExtensionContext) {
           vscode.Uri.joinPath(context.extensionUri, "static"),
         ],
         enableScripts: true,
-      }
+      },
     );
 
     // And set its HTML content
     const scriptUri = panel.webview.asWebviewUri(
-      vscode.Uri.joinPath(context.extensionUri, "static", "script.js")
+      vscode.Uri.joinPath(context.extensionUri, "static", "script.js"),
     );
     const styleUri = panel.webview.asWebviewUri(
-      vscode.Uri.joinPath(context.extensionUri, "static", "style.css")
+      vscode.Uri.joinPath(context.extensionUri, "static", "style.css"),
     );
 
     panel.webview.html = "Waiting for a valid token";
@@ -89,11 +89,11 @@ export function activate(context: vscode.ExtensionContext) {
     // Check if channelName is set
     let channelName = configuration.get<string>("channelName");
     let userId = accessToken?.user_id;
-    if (channelName) {
+    if (channelName !== undefined) {
       const userData = await getUsers(
         accessToken.token,
         accessToken.client_id,
-        channelName
+        channelName,
       );
 
       if (userData) {
@@ -111,17 +111,17 @@ export function activate(context: vscode.ExtensionContext) {
     const chat = new Chat(accessToken, () => accessToken, channelName);
 
     chat.on("privateMessage", (message) =>
-      forwardMessage(panel, clientId, token, message)
+      forwardMessage(panel, clientId, token, message),
     );
     chat.on("clearCommand", (command) => forwardCommand(panel, command));
     chat.on("userNotice", (notice) =>
-      forwardNotice(panel, clientId, token, notice)
+      forwardNotice(panel, clientId, token, notice),
     );
 
     // TODO: There's a race condition happening here!
     //       Because there's no guarantee it's finished before we use it
     // Authenticate and download badges
-    downloadBadges(accessToken);
+    void downloadBadges(accessToken);
 
     // Download pronouns descriptions
     void Pronouns.instance.init();
@@ -136,18 +136,18 @@ export function activate(context: vscode.ExtensionContext) {
     void new BetterTTV.EventSocket(
       userId,
       BetterTTV.Emotes.instance,
-      BetterTTV.UserBadges.instance
+      BetterTTV.UserBadges.instance,
     );
 
-    getEmoteSet().then((emotes) => {
+    void getEmoteSet().then((emotes) => {
       if (emotes) {
         Emotes.instance.addEmotes(emotes);
       }
     });
 
-    getUserConnection(userId).then((emoteSet) => {
-      if (emoteSet && emoteSet.id) {
-        connectToSevenTv(emoteSet.id);
+    void getUserConnection(userId).then(async (emoteSet) => {
+      if (emoteSet && emoteSet.id !== undefined) {
+        await connectToSevenTv(emoteSet.id);
       }
       if (emoteSet && emoteSet.emotes) {
         Emotes.instance.addEmotes(emoteSet.emotes);
@@ -159,19 +159,19 @@ export function activate(context: vscode.ExtensionContext) {
         // When the panel is closed, cancel any future updates to the webview content
       },
       undefined,
-      context.subscriptions
+      context.subscriptions,
     );
   };
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("twitchChat.start", startChat)
+    vscode.commands.registerCommand("twitchChat.start", startChat),
   );
 }
 
 function getWebviewContent(
   panel: vscode.WebviewPanel,
   scriptUri: vscode.Uri,
-  styleUri: vscode.Uri
+  styleUri: vscode.Uri,
 ) {
   return `<!DOCTYPE html>
 <html lang="en">
