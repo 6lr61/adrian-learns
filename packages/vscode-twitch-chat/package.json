@@ -80,7 +80,8 @@
     "watch": "tsc -b ./src/extension ./src/webview -w",
     "prebuild": "npx rimraf dist && npx rimraf static/*.js static/*.tsbuildinfo",
     "build": "vsce package",
-    "clean": "npx rimraf dist && npx rimraf static/*.js static/*.tsbuildinfo"
+    "clean": "npx rimraf dist && npx rimraf static/*.js static/*.tsbuildinfo",
+    "lint": "eslint src"
   },
   "dependencies": {
     "ts-twitch-irc": "^0.2.0",
