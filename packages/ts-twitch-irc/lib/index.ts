@@ -6,7 +6,6 @@ import {
 } from "./types/clearCommands.js";
 import { parseMessage } from "./twitch/parser.js";
 import { TwitchUserName } from "./types/twitchTags.js";
-import { log, startNewLog } from "./utils/log.js";
 import type { UserNotice } from "./types/userNotice.js";
 
 const TWITCH_IRC_SERVER = "wss://irc-ws.chat.twitch.tv:443"; // I don't know if this will just work?
@@ -40,7 +39,7 @@ type CallbackFunction =
 type PrivateMessageCallback = (content: PrivateMessage) => void;
 type UserNoticeCallback = (content: UserNotice) => void;
 type ClearCommandCallback = (
-  content: ClearChatCommand | ClearMessageCommand
+  content: ClearChatCommand | ClearMessageCommand,
 ) => void;
 
 export interface Token {
@@ -72,14 +71,12 @@ export class Chat {
     token: Token,
     borrowToken: () => Token,
     channelName?: string,
-    websocketUrl: string = TWITCH_IRC_SERVER
+    websocketUrl: string = TWITCH_IRC_SERVER,
   ) {
     this.channelName = channelName || token.login;
     this.borrowToken = borrowToken;
     this.webSocketUrl = websocketUrl;
     this.webSocket = this.connectToIRC(token);
-
-    startNewLog();
   }
 
   private connectToIRC(token?: Token): WebSocket {
@@ -94,7 +91,7 @@ export class Chat {
       webSocket.send(`PASS oauth:${token?.token}`);
       webSocket.send(`NICK ${token?.login}`);
       webSocket.send(
-        "CAP REQ :twitch.tv/commands twitch.tv/tags twitch.tv/membership"
+        "CAP REQ :twitch.tv/commands twitch.tv/tags twitch.tv/membership",
       );
       console.debug("Chat: Joining", `#${this.channelName}`);
       webSocket.send(`JOIN #${this.channelName}`);
@@ -103,7 +100,6 @@ export class Chat {
     const parser = this.parseChatMessage;
     webSocket.on("message", function (ircMessage) {
       const rawIrcMessage: string = ircMessage.toString().trimEnd();
-      log(`${Date.now()}: ${rawIrcMessage}`);
       const messages = rawIrcMessage.split("\r\n");
 
       messages.forEach((message) => parser(message));
@@ -134,7 +130,7 @@ export class Chat {
         console.debug(
           "whisper:",
           parsedMessage.username,
-          parsedMessage.message
+          parsedMessage.message,
         );
         break;
       case "system":
@@ -192,8 +188,8 @@ export class Chat {
       this.webSocket.send(
         `PRIVMSG #${this.channelName} :${message.slice(
           0,
-          TWITCH_MESSAGE_CHARACTER_LIMIT
-        )}`
+          TWITCH_MESSAGE_CHARACTER_LIMIT,
+        )}`,
       );
 
       void this.send(message.slice(TWITCH_MESSAGE_CHARACTER_LIMIT));
@@ -229,12 +225,12 @@ export class Chat {
       rateLimit.message_count++;
 
       this.webSocket.send(
-        reply(message.slice(0, TWITCH_MESSAGE_CHARACTER_LIMIT))
+        reply(message.slice(0, TWITCH_MESSAGE_CHARACTER_LIMIT)),
       );
 
       void this.sendReply(
         message_id,
-        message.slice(TWITCH_MESSAGE_CHARACTER_LIMIT)
+        message.slice(TWITCH_MESSAGE_CHARACTER_LIMIT),
       );
       return;
     }
