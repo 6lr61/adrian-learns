@@ -10,7 +10,9 @@
     "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true
-  }
+  },
+  "include": [".eslintrc.cjs", "packages/**/*"]
 }
