@@ -4,6 +4,7 @@
   "exclude": ["../webview"],
   "compilerOptions": {
     "target": "ESNext",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "NodeNext",
     "outDir": "../../dist",
     "sourceMap": true
