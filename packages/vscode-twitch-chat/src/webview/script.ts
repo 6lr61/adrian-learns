@@ -63,18 +63,16 @@ function parseText(text: string): ParsedTextNodes[] {
   const nodes: ParsedTextNodes[] = [];
   let index = 0;
   for (const mention of mentions) {
-    if (mention.index) {
-      if (index <= mention.index) {
-        nodes.push(document.createTextNode(text.slice(index, mention.index)));
-      }
-
-      const mentionElement = document.createElement("span");
-      mentionElement.classList.add("mention");
-      mentionElement.textContent = mention[0];
-      nodes.push(mentionElement);
-
-      index = mention.index + mention[0].length;
+    if (index <= mention.index) {
+      nodes.push(document.createTextNode(text.slice(index, mention.index)));
     }
+
+    const mentionElement = document.createElement("span");
+    mentionElement.classList.add("mention");
+    mentionElement.textContent = mention[0];
+    nodes.push(mentionElement);
+
+    index = mention.index + mention[0].length;
   }
 
   if (index !== text.length) {
@@ -169,7 +167,7 @@ window.addEventListener("message", (event) => {
     const imageElement = chatMessage.profilePicture
       ? document.createElement("img")
       : document.createElement("div");
-    imageElement.classList.add("profile-picture");
+      imageElement.classList.add("profile-picture");
     messageElement.append(imageElement);
 
     if (chatMessage.profilePicture) {
